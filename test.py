@@ -9,9 +9,7 @@ import string
 from random import uniform, random, choice, sample
 
 class Ctypto:
-    # 密钥在使用该方法时可补足为16倍数
-    # 偏移量在使用该方法时，在不足16位时补为16位
-    # 偏移量必须为16位，不可多
+    
     def length(value):
         l = len(value)
         flag = l % 16
@@ -23,7 +21,7 @@ class Ctypto:
 
     def encryp_str(content, key, mode, iv):
         cryptor = AES.new(key, mode, iv)
-        # 被加密内容需大于密钥长度,且为16倍数
+        
         key_length = len(key)
         content_legth = len(content)
         if content_legth < key_length:
@@ -91,14 +89,15 @@ if __name__ == '__main__':
     content = text
     # 密钥
     #key = input(key)
-    key = key.encode('utf-8')  # 密钥需编码
+    key = key.encode('utf-8')  
     # 偏移量
-    #iv = input(r'输入偏移量（16位），少于16位将使用“\0”自动补齐：')
+    
     iv="16" #偏移量
     print('原文：', content)
     content = content.encode('utf-8')  # 加密内容
     iv = iv.encode('utf-8')
-    # 处理key和iv长度
+    
+
     key = Ctypto.length(key)
     iv = Ctypto.length(iv)
 

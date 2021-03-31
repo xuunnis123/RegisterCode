@@ -7,7 +7,41 @@ from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 import string
 from random import uniform, random, choice, sample
+import mysql.connector
+from mysql.connector import Error
 
+class Db:
+    def connection():
+       
+
+        try:
+            # 連接 MySQL/MariaDB 資料庫
+            connection = mysql.connector.connect(
+                host='localhost:3307',          # 主機名稱
+                database='officeguide_db', # 資料庫名稱
+                user='root',        # 帳號
+                password='123456')  # 密碼
+
+            if connection.is_connected():
+
+                # 顯示資料庫版本
+                db_Info = connection.get_server_info()
+                print("資料庫版本：", db_Info)
+
+                # 顯示目前使用的資料庫
+                cursor = connection.cursor()
+                cursor.execute("SELECT DATABASE();")
+                record = cursor.fetchone()
+                print("目前使用的資料庫：", record)
+
+        except Error as e:
+            print("資料庫連接失敗：", e)
+
+        finally:
+            if (connection.is_connected()):
+                cursor.close()
+                connection.close()
+                print("資料庫連線已關閉")
 class Key:
     def password(length):
         pw = str()
@@ -53,6 +87,13 @@ class Key:
         content = bytes.decode(content).rstrip('\0')
         print('明文：', content)
         return content
+    
+    def createKey(product_id,machine_code):
+        
+
+
+        return token
+
 
     def activate(token,aes_public_key,product_id,machine_code):
         response=Response("","",0,"")
@@ -148,3 +189,6 @@ if __name__ == '__main__':
 
     en_content = Key.encryp_str(content, key, mode, iv)
     content = Key.decryp_str(en_content, key, mode, iv)
+
+
+    Db.connection()

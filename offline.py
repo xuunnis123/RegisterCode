@@ -4,29 +4,34 @@ from Crypto.Cipher import AES
 from binascii import b2a_hex, a2b_hex
 import base64
 import os
+import string
+import random
+import json
+from cryptography.fernet import Fernet
+import codecs
 def keyGen(key,machineCode,date,iv,mode):
-    '''
-    編碼的原理去製作的
-    一般來說 就是把編碼後"認證碼"給使用者去輸入
-    Base32 會輸出26各字 看起來會很不對稱
-    這個時候 很多程式會多加兩個字(ex:JS)
-    讓整個碼變成4*7 =28各字 變得比較對稱
-    EX: "DYWS YQK7 V25E YA6M 3G8M HXNY CN"
-    "DYWS YQK7 V25E YA6M 3G8M HXNY CNJS"
-    '''
+
     code=date
     code=code.encode('utf-8')
     en_code = encryp_str(code, key, mode, iv)
     
     return en_code
 
-def formatCode(en_code):
-    encode32=base64.b32encode(en_code.encode())
-    print(encode32)
-    return encode32
+def activateCode():
+    code = string.ascii_letters+string.digits #alphabet code
+    codes = [''.join(random.choices(code,k=5)) for _ in range(4)] #there are 5 codes in one section, total:4 sections
+    actCode = '-'.join(codes)
+    print("actCode=",actCode)
+    return actCode
+
+def formatCode(key):
+    while len(key)%16!=0:
+        key+='\0'
+    key=key.encode('utf-8')
+    return key
 
 def deFormat(de_code):
-    de_code
+    
     return de_code
 
 def checkKey(en_code,key,mode,iv):
@@ -34,7 +39,7 @@ def checkKey(en_code,key,mode,iv):
     try:
         de_code=decryp_str(en_code,key,mode,iv)
     except:
-        return "Some Error" 
+        return "Not VALID CODE." 
         
     if de_code!='':
         code=de_code[0:4]
@@ -89,24 +94,54 @@ def decryp_str(en_content, key, mode, iv):
     #print('解密1：', content)
     content = cryptor.decrypt(content)
     #print('解密2：', content)
+    print("content=",content)
     content = bytes.decode(content).rstrip('\0')
     print('明文：', content)
     return content
 
+def generateAuthFile(en_code,authCode):
+    data={'encode':en_code,'authCode':authCode}
+    key="testkey"
+    key=formatCode(key)
+    iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
+    mode = AES.MODE_CBC  # 加密模式
+
+    with open('licensefile.skm', 'w') as f:
+        json.dump(data,f)
+
+def checkAuthFile(code):
+    
+    if code!='':
+        with open('licensefile.skm', 'r') as f:
+            save=json.loads(f.read())
+        if save['authCode']==code:
+            return save['encode']
+        else: return "Error Code."
+    else: return "Error: Input Nothing."
+
 if __name__ == '__main__':
+    #### basic info.####
     date=datetime.datetime.today().strftime("%Y%m%d")
     machineCode=str(getMachineCode())
     key="testkey"
-    while len(key)%16!=0:
-        key+='\0'
-    key=key.encode('utf-8')
+    key=formatCode(key)
+    
     iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
     #iv="16" #偏移量
     #iv=iv.encode('utf-8')
     mode = AES.MODE_CBC  # 加密模式
 
+    # generate code
     en_code=keyGen(key,machineCode,date,iv,mode)
-    print("en_code=",en_code)
+    authCode=activateCode()
+    generateAuthFile(en_code,authCode)
 
-    test=checkKey(en_code, key, mode, iv)
+    # check code
+    code=input('Input your code:')
+    recordCode=checkAuthFile(code)
+    test=checkKey(recordCode, key, mode, iv)
     print("test=",test)
+
+    
+
+    

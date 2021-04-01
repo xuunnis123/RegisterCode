@@ -12,6 +12,8 @@ import codecs
 def keyGen(key,machineCode,date,iv,mode):
 
     code=date
+    code+=machineCode
+    print(code)
     code=code.encode('utf-8')
     en_code = encryp_str(code, key, mode, iv)
     
@@ -30,30 +32,30 @@ def formatCode(key):
     key=key.encode('utf-8')
     return key
 
-def deFormat(de_code):
-    
-    return de_code
-
 def checkKey(en_code,key,mode,iv):
     #把暗碼解成明碼
     try:
         de_code=decryp_str(en_code,key,mode,iv)
     except:
-        return "Not VALID CODE." 
+        return en_code 
         
     if de_code!='':
+        print("code=",de_code)
         code=de_code[0:4]
         code+='-'
         code+=de_code[4:6]
         code+='-'
-        code+=de_code[6:]
+        code+=de_code[6:8]
         today=str(datetime.datetime.today().strftime("%Y-%m-%d"))
-        
-        #code1='2021-04-20'
-        if code>=today:
-            return True
-        else:return False
-    else: return False
+        machine=de_code[8:]
+        if machine==str(getMachineCode()):
+
+            #code1='2021-04-20'
+            if code>=today:
+                return True
+            else:return "INVALID CODE"
+        else: return "Error: On Different Device."
+    else: return "MISS CODE"
     
     
 
@@ -99,12 +101,8 @@ def decryp_str(en_content, key, mode, iv):
     print('明文：', content)
     return content
 
-def generateAuthFile(en_code,authCode):
+def generateAuthFile(en_code,authCode,machineCode):
     data={'encode':en_code,'authCode':authCode}
-    key="testkey"
-    key=formatCode(key)
-    iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
-    mode = AES.MODE_CBC  # 加密模式
 
     with open('licensefile.skm', 'w') as f:
         json.dump(data,f)
@@ -114,9 +112,10 @@ def checkAuthFile(code):
     if code!='':
         with open('licensefile.skm', 'r') as f:
             save=json.loads(f.read())
-        if save['authCode']==code:
-            return save['encode']
-        else: return "Error Code."
+            if save['authCode']==code:
+                return save['encode']
+            else: return "Error Code."
+        
     else: return "Error: Input Nothing."
 
 if __name__ == '__main__':
@@ -130,17 +129,21 @@ if __name__ == '__main__':
     #iv="16" #偏移量
     #iv=iv.encode('utf-8')
     mode = AES.MODE_CBC  # 加密模式
+    filepath=os.getcwd()+"/licensefile.skm"
 
-    # generate code
-    en_code=keyGen(key,machineCode,date,iv,mode)
-    authCode=activateCode()
-    generateAuthFile(en_code,authCode)
+    print(filepath)
+    if os.path.isfile(filepath)==False:
+        # generate code
+        print("Gen")
+        en_code=keyGen(key,machineCode,date,iv,mode)
+        authCode=activateCode()
+        generateAuthFile(en_code,authCode,machineCode)
 
     # check code
     code=input('Input your code:')
     recordCode=checkAuthFile(code)
-    test=checkKey(recordCode, key, mode, iv)
-    print("test=",test)
+    result=checkKey(recordCode, key, mode, iv)
+    print("Result:",result)
 
     
 

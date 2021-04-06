@@ -69,7 +69,7 @@ def generateEncodeFile(en_code,machineCode,date):
 if __name__ == '__main__':
 
    #date=datetime.datetime.today().strftime("%Y%m%d")
-   date="20210406"
+   date="20210407"
    machineCode="ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx"
    #machineCode=input("machine Code:")
    #date=input("Expire Date:(yyyymmdd)")

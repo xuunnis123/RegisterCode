@@ -10,7 +10,7 @@ import json
 from cryptography.fernet import Fernet
 import codecs
 from companyGenKey import keyGen
-
+import logging
 
 def checkKey(en_code,key,mode,iv):
     #把暗碼解成明碼
@@ -36,9 +36,9 @@ def checkKey(en_code,key,mode,iv):
             #code1='2021-04-20'
             if code>=today:
                 return True
-            else:return "INVALID CODE"
+            else:return "EXPIRED CODE"
         else: return "Error: On Different Device."
-    else: return "MISS CODE"
+    else: return "MISSING CODE"
     
     
 
@@ -86,6 +86,10 @@ def formatCode(key):
     key=key.encode('utf-8')
     return key
 
+def inputCode(machineCode):
+    en_code=input('Input your code:')
+    generateAuthFile(en_code,machineCode)
+
 def execute():
     flag=False
     #### basic info.####
@@ -104,25 +108,31 @@ def execute():
     if os.path.isfile(filepath)==False:
         # generate code
         print("Gen")
-    
-        en_code=input('Input your code:')
-        generateAuthFile(en_code,machineCode)
+        inputCode(machineCode)
+        #en_code=input('Input your code:')
+        #generateAuthFile(en_code,machineCode)
         # check code
     #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
     recordCode=checkAuthFile()
     iv=unhexlify(recordCode.split('|',1)[0])
     record=recordCode.split('|',1)[1]
+   
     result=checkKey(record, key, mode, iv)
-
+ 
     if result==True:
-        flag=True
+            flag=True
+    else:
+        print(result)
+        inputCode(machineCode)
+        execute()
+
     return flag
 
 if __name__ == '__main__':
     
     if execute() == True:
         print("Continue")
-    else:print("Cannot Execute!!")
+    else:print("Cannot Validate!!")
 
     
     

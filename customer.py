@@ -11,6 +11,10 @@ from cryptography.fernet import Fernet
 import codecs
 from companyGenKey import keyGen
 import logging
+from argparse import ArgumentParser
+from getmac import get_mac_address as gma
+
+
 
 def checkKey(en_code,key,mode,iv):
     #把暗碼解成明碼
@@ -87,7 +91,9 @@ def formatCode(key):
     return key
 
 def inputCode(machineCode):
-    en_code=input('Input your code:')
+    print("inputCode")
+    en_code=args.code
+    print("en_code=",en_code)
     generateAuthFile(en_code,machineCode)
 
 def execute():
@@ -97,10 +103,7 @@ def execute():
     machineCode=str(getMachineCode())
     key="testkey"
     key=formatCode(key)
-    '''
-    {"encode": "77065fd24a7e1f1ab0966f5b8c7c823a|1e842f11b9e61fb6b59fb3741f0587300653158c73c20c7ecfd54d9e6e5374021691497eeeef8ac97901bc19935916f0ae4b63f9475906639539b6441114482c", "machineCode": "ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx", "ExpiredDate": "20210406"}
 
-    '''
     
     mode = AES.MODE_CBC  # 加密模式
     filepath=os.getcwd()+"/licensefile.skm"
@@ -115,8 +118,9 @@ def execute():
     #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
     recordCode=checkAuthFile()
     iv=unhexlify(recordCode.split('|',1)[0])
+    print("iv",iv)
     record=recordCode.split('|',1)[1]
-   
+    print("record",record)
     result=checkKey(record, key, mode, iv)
  
     if result==True:
@@ -130,6 +134,13 @@ def execute():
 
 if __name__ == '__main__':
     
+    parser = ArgumentParser()
+    parser.add_argument('-code',help='Input code',dest="code")
+    print("1")
+    args = parser.parse_args()
+    print("2")
+    print(args.code)
+    print(gma)
     if execute() == True:
         print("Continue")
     else:print("Cannot Validate!!")

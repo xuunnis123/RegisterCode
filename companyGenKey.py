@@ -10,6 +10,9 @@ import json
 from cryptography.fernet import Fernet
 import codecs
 
+
+
+
 def keyGen(key,machineCode,date,iv,mode):
 
     code=date
@@ -67,10 +70,20 @@ def generateEncodeFile(en_code,machineCode,date):
         json.dump(data,f)
 
 if __name__ == '__main__':
-
+   from argparse import ArgumentParser
+   parser = ArgumentParser()
+    #parser.add_argument("-a", "--inputA", help="this is parameter a", dest="argA", type=int, default="0")
+   parser.add_argument('-machineCode',help='machineCode',dest="machineCode")
+   parser.add_argument('-date', help='Valid date(yyyymmdd)',dest="date")
+    #parser.add_argument('-code',help='Input your code',dest="code")
+   args = parser.parse_args()
    #date=datetime.datetime.today().strftime("%Y%m%d")
-   date="20210407"
-   machineCode="ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx"
+
+   #date="20210405"
+   date = args.date
+   machineCode=args.machineCode
+   #machineCode="ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx"
+
    #machineCode=input("machine Code:")
    #date=input("Expire Date:(yyyymmdd)")
    key="testkey"

@@ -1,7 +1,7 @@
 import datetime
 import platform
 from Crypto.Cipher import AES  
-from binascii import b2a_hex, a2b_hex
+from binascii import b2a_hex, a2b_hex,hexlify
 import base64
 import os
 import string
@@ -17,8 +17,11 @@ def keyGen(key,machineCode,date,iv,mode):
     print(code)
     code=code.encode('utf-8')
     en_code = encryp_str(code, key, mode, iv)
-    
-    return en_code
+    print(type(iv),type(en_code))
+    print("iv=",iv)
+    encode=hexlify(iv).decode()+"|"+en_code
+    print("encode=",encode)
+    return encode
 
 
 def encryp_str(content, key, mode, iv):
@@ -73,6 +76,7 @@ if __name__ == '__main__':
    key="testkey"
    key=formatCode(key) 
    iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
+   print("com_iv=",iv)
    mode = AES.MODE_CBC  # 加密模式
 
    en_code=keyGen(key,machineCode,date,iv,mode) 

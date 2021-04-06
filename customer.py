@@ -1,7 +1,7 @@
 import datetime
 import platform
 from Crypto.Cipher import AES  
-from binascii import b2a_hex, a2b_hex
+from binascii import b2a_hex, a2b_hex,unhexlify
 import base64
 import os
 import string
@@ -15,6 +15,7 @@ from companyGenKey import keyGen
 def checkKey(en_code,key,mode,iv):
     #把暗碼解成明碼
     print("checkKey")
+    print(en_code,key,mode,iv)
     try:
         de_code=decryp_str(en_code,key,mode,iv)
     except:
@@ -55,9 +56,9 @@ def getMachineCode(v=1):
 def decryp_str(en_content, key, mode, iv):
     cryptor = AES.new(key, mode, iv)
     content = a2b_hex(en_content)
-    #print('解密1：', content)
+    print('解密1：', content)
     content = cryptor.decrypt(content)
-    #print('解密2：', content)
+    print('解密2：', content)
     print("content=",content)
     content = bytes.decode(content).rstrip('\0')
     print('明文：', content)
@@ -92,8 +93,11 @@ def execute():
     machineCode=str(getMachineCode())
     key="testkey"
     key=formatCode(key)
+    '''
+    {"encode": "77065fd24a7e1f1ab0966f5b8c7c823a|1e842f11b9e61fb6b59fb3741f0587300653158c73c20c7ecfd54d9e6e5374021691497eeeef8ac97901bc19935916f0ae4b63f9475906639539b6441114482c", "machineCode": "ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx", "ExpiredDate": "20210406"}
 
-    iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
+    '''
+    
     mode = AES.MODE_CBC  # 加密模式
     filepath=os.getcwd()+"/licensefile.skm"
 
@@ -104,10 +108,14 @@ def execute():
         en_code=input('Input your code:')
         generateAuthFile(en_code,machineCode)
         # check code
-    
+    #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
     recordCode=checkAuthFile()
-    result=checkKey(recordCode, key, mode, iv)
-    print("Result:",result)
+    iv=unhexlify(recordCode.split('|',1)[0])
+    record=recordCode.split('|',1)[1]
+    result=checkKey(record, key, mode, iv)
+
+    if result==True:
+        flag=True
     return flag
 
 if __name__ == '__main__':

@@ -127,14 +127,17 @@ def execute():
             flag=True
     else:
         print(result)
-        inputCode(machineCode)
-        execute()
+        print("execute again")
+        os.remove("licensefile.skm")
+        #inputCode(machineCode)
+        #execute()
 
     return flag
 
 def test():
     #args.code()
-    print("test!")
+    print("args")
+    print(args.validate_code)
 
 if __name__ == '__main__':
     
@@ -142,16 +145,17 @@ if __name__ == '__main__':
    
     parser.add_argument('-code',help='Input code',dest="code")
     parser.add_argument('-test',action='store_const',const=test)
+    parser.add_argument('-revalidate',dest="validate_code")
+    #parser.add_argument('-inputcode',action='store_const',const=)
     args = parser.parse_args()
-    print(args.test())
     
     #if args.test=='test':
     #    test()
-    '''
+    
     if execute() == True:
         print("Continue")
     else:print("Cannot Validate!!")
-    '''
+    
 
     
     

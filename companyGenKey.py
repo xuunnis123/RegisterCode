@@ -45,6 +45,9 @@ def encryp_str(content, key, mode, iv):
         cipher_content_hex_de = cipher_content_hex.decode()
         print('密文：', cipher_content_hex_de)
         return cipher_content_hex_de
+def encrypt_rsa(content,publickey):
+    return ""
+
 def formatCode(key):
     while len(key)%16!=0:
         key+='\0'

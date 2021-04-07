@@ -35,7 +35,7 @@ def checkKey(en_code,key,mode,iv):
         code+=de_code[6:8]
         today=str(datetime.datetime.today().strftime("%Y-%m-%d"))
         machine=de_code[8:]
-        if machine==str(getMachineCode()):
+        if machine==str(gma()):
 
             #code1='2021-04-20'
             if code>=today:
@@ -100,7 +100,7 @@ def execute():
     flag=False
     #### basic info.####
     
-    machineCode=str(getMachineCode())
+    machineCode=str(gma())
     key="testkey"
     key=formatCode(key)
 
@@ -117,9 +117,9 @@ def execute():
         # check code
     #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
     recordCode=checkAuthFile()
-    iv=unhexlify(recordCode.split('|',1)[0])
+    iv=unhexlify(recordCode.split('_',1)[0])
     print("iv",iv)
-    record=recordCode.split('|',1)[1]
+    record=recordCode.split('_',1)[1]
     print("record",record)
     result=checkKey(record, key, mode, iv)
  
@@ -132,18 +132,26 @@ def execute():
 
     return flag
 
+def test():
+    #args.code()
+    print("test!")
+
 if __name__ == '__main__':
     
     parser = ArgumentParser()
+   
     parser.add_argument('-code',help='Input code',dest="code")
-    print("1")
+    parser.add_argument('-test',action='store_const',const=test)
     args = parser.parse_args()
-    print("2")
-    print(args.code)
-    print(gma)
+    print(args.test())
+    
+    #if args.test=='test':
+    #    test()
+    '''
     if execute() == True:
         print("Continue")
     else:print("Cannot Validate!!")
+    '''
 
     
     

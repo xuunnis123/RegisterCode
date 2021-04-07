@@ -22,7 +22,7 @@ def keyGen(key,machineCode,date,iv,mode):
     en_code = encryp_str(code, key, mode, iv)
     print(type(iv),type(en_code))
     print("iv=",iv)
-    encode=hexlify(iv).decode()+"|"+en_code
+    encode=hexlify(iv).decode()+"_"+en_code
     print("encode=",encode)
     return encode
 

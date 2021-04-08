@@ -6,3 +6,4 @@ ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx.json
 *.json
 public.pem
 private.pem
+testRSA.py

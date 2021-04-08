@@ -16,13 +16,13 @@ from getmac import get_mac_address as gma
 
 
 
-def checkKey(en_code,key):
+def checkKey(en_code,key,mode,iv):
     #把暗碼解成明碼
     print("checkKey")
     print(en_code,key,mode,iv)
     try:
-        #de_code=decryp_str(en_code,key,mode,iv)
-        de_code=decode_RSA(en_code,key)
+        de_code=decryp_str(en_code,key,mode,iv)
+        
     except:
         print("except")
         return en_code 
@@ -134,46 +134,6 @@ def execute():
         #execute()
 
     return flag
-def execute2():
-    flag=False
-    #### basic info.####
-    
-    machineCode=str(gma())
-    key="testkey"
-    key=formatCode(key)
-
-    
-    mode = AES.MODE_CBC  # 加密模式
-    filepath=os.getcwd()+"/licensefile.skm"
-
-    if os.path.isfile(filepath)==False:
-        # generate code
-        print("Gen")
-        inputCode(machineCode)
-        #en_code=input('Input your code:')
-        #generateAuthFile(en_code,machineCode)
-        # check code
-    #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
-    recordCode=checkAuthFile()
-    
-    result=checkKey(recordCode, key, mode, iv)
- 
-    if result==True:
-            flag=True
-    else:
-        print(result)
-        print("execute again")
-        os.remove("licensefile.skm")
-        #inputCode(machineCode)
-        #execute()
-
-    return flag
-def decode_RSA(rsa_text):
-     #decode
-   
-    back_text = cipher.decrypt(base64.b64decode(rsa_text), 0)
-    print(back_text.decode('utf-8'))
-    return back_text.decode('utf-8')
 
 def test():
     #args.code()

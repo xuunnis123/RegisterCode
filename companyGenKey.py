@@ -48,32 +48,7 @@ def encryp_str(content, key, mode, iv):
         cipher_content_hex_de = cipher_content_hex.decode()
         print('密文：', cipher_content_hex_de)
         return cipher_content_hex_de
-def generatePrivatePublic():
-    random_generator = Random.new().read
-    keys = RSA.generate(2048, random_generator)
-    pubkey=keys.publickey()
-    privkey=keys.exportKey()
-    pubcipher = PKCS1_cipher.new(pubkey) # ciphertext = cipher.encrypt(message)
-    privcipher = PKCS1_cipher.new(privkey)  # message = cipher.decrypt(ciphertext)
-    privkeystr = keys.exportKey(format='PEM', passphrase=None, pkcs=1)
-    pubkeystr = keys.publickey().exportKey(format='PEM', passphrase=None, pkcs=1)
-    print("privkeystr:",privkey)
-    print("pubkeystr:",pubkey)
 
-
-def encode_RSA(content,keys):
-    #encode
-    cipher = PKCS1_cipher.new(keys)
-    rsa_text = base64.b64encode(cipher.encrypt(bytes(content.encode("utf8"))))
-    print(rsa_text.decode('utf-8'))
-
-    return rsa_text.decode('utf-8')
-def decode_RSA(rsa_text,keys):
-     #decode
-    cipher = PKCS1_cipher.new(keys)
-    back_text = cipher.decrypt(base64.b64decode(rsa_text), 0)
-    print(back_text.decode('utf-8'))
-    return back_text.decode('utf-8')
 def formatCode(key):
     while len(key)%16!=0:
         key+='\0'
@@ -108,10 +83,10 @@ if __name__ == '__main__':
    args = parser.parse_args()
    #date=datetime.datetime.today().strftime("%Y%m%d")
 
-   date="20210407"
-   #date = args.date
-   #machineCode=args.machineCode
-   machineCode="34:c9:3d:47:94:a6"
+   #date="20210407"
+   date = args.date
+   machineCode=args.machineCode
+   #machineCode="34:c9:3d:47:94:a6"
 
  
    key="testkey"
@@ -120,25 +95,7 @@ if __name__ == '__main__':
    #print("com_iv=",iv)
    mode = AES.MODE_CBC  # 加密模式
 
-   #en_code=keyGen(key,machineCode,date,iv,mode) 
-   #generateEncodeFile(en_code,machineCode,date)
+   en_code=keyGen(key,machineCode,date,iv,mode) 
+   generateEncodeFile(en_code,machineCode,date)
 
-   random_generator = Random.new().read
-   keys = RSA.generate(2048) #privateKey
-   pubkey=keys.publickey()
-   privkey=keys.exportKey()
-   pubcipher = PKCS1_cipher.new(pubkey) # ciphertext = cipher.encrypt(message)
-   privcipher = PKCS1_cipher.new(privkey)  # message = cipher.decrypt(ciphertext)
-   privkeystr = keys.exportKey(format='PEM', passphrase=None, pkcs=1)
-   pubkeystr = keys.publickey().exportKey(format='PEM', passphrase=None, pkcs=1)
-   
-   code=date
-   code+=machineCode
-   encode=encode_RSA(code,keys)
-   generateEncodeFile(encode,machineCode,date)
-   cipher = PKCS1_cipher.new(keys)
-   print("keys:",pubkeystr,privkeystr)
-   #print(cipher.decrypt(base64.b64decode(encode), 0).decode('utf-8'))
-   encode=privkeystr.decode('utf-8')+"_"+encode
-   print(encode) 
    

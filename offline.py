@@ -118,7 +118,18 @@ def checkAuthFile(code):
         
     else: return "Error: Input Nothing."
 
+def test():
+    print("test")
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    #parser.add_argument("-a", "--inputA", help="this is parameter a", dest="argA", type=int, default="0")
+    parser.add_argument('-machineCode',help='machineCode',dest="machineCode")
+    parser.add_argument('-date', help='Valid date(yyyymmdd)',dest="date")
+    parser.add_argument('-reset', help='Generate a pair of new keys',dest="reset")
+     #parser.add_argument('-code',help='Input your code',dest="code")
+    args = parser.parse_args()
+    #date=datetime.datetime.today().strftime("%Y%m%d")
     #### basic info.####
     date=datetime.datetime.today().strftime("%Y%m%d")
     machineCode=str(getMachineCode())

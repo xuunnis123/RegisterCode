@@ -47,8 +47,9 @@ def generatePrivatePublic():
 def encode_RSA(content,machineCode):
     #encode
     message = machineCode
-    rsakey = RSA.importKey(open("private.pem").read())
-   
+    f = open("private.pem","rb")
+    rsakey = RSA.importKey(f.read(),passphrase='secret#code')
+    f.close()
     signer = Signature_pkcs1_v1_5.new(rsakey)
     digest = SHA.new()
     digest.update(message.encode("utf-8"))
@@ -95,10 +96,10 @@ if __name__ == '__main__':
    args = parser.parse_args()
    #date=datetime.datetime.today().strftime("%Y%m%d")
 
-   #date="20210408"
-   date = args.date
-   machineCode = args.machineCode
-   #machineCode="34:c9:3d:47:94:a6"
+   date="20210413"
+   #date = args.date
+   #machineCode = args.machineCode
+   machineCode="34:c9:3d:47:94:a6"
 
 
    gen = input("Generate:(Y/N)")
@@ -108,7 +109,7 @@ if __name__ == '__main__':
    
    code = date
    code+= machineCode
-   
+   print("code="+code)
    encode = encode_RSA(code,machineCode)
    
    #Base64 Encode

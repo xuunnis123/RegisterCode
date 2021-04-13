@@ -24,7 +24,7 @@ def generatePrivatePublic():
     random_generator = Random.new().read
     # 產生 2048 位元 RSA 金鑰
     key = RSA.generate(2048, random_generator)
-    privateKey=key.exportKey()
+    privateKey = key.exportKey()
     
     # 保護金鑰的密碼
     secretCode = "secret#code"
@@ -55,22 +55,22 @@ def encode_RSA(content,machineCode):
     sign = signer.sign(digest)
     signature = base64.b64encode(sign)
     
-    encode=machineCode+"_"+signature.decode('utf-8')+"_"+content
-    encode=encode.encode("utf-8")
+    encode = machineCode+"_"+signature.decode('utf-8')+"_"+content
+    encode = encode.encode("utf-8")
     encode = base64.b64encode(encode)
     # Decoding the Base64 bytes to string
     encode = encode.decode("UTF-8")
     return encode
 
 def decode_RSA(encode):
-    encode=encode.encode("UTF-8")
-    encode=base64.b64decode(encode)
-    encode=encode.decode("UTF-8")
+    encode = encode.encode("UTF-8")
+    encode = base64.b64decode(encode)
+    encode = encode.decode("UTF-8")
     signature = encode
-    buffer=signature.split("_")
-    message_verify=buffer[0]
-    signature=buffer[1]
-    content=buffer[2]
+    buffer = signature.split("_")
+    message_verify = buffer[0]
+    signature = buffer[1]
+    content = buffer[2]
     rsakey = RSA.importKey(open("public.pem").read())
     verifier = Signature_pkcs1_v1_5.new(rsakey)
     hsmsg = SHA.new()
@@ -87,6 +87,7 @@ if __name__ == '__main__':
    from argparse import ArgumentParser
    parser = ArgumentParser()
     #parser.add_argument("-a", "--inputA", help="this is parameter a", dest="argA", type=int, default="0")
+   parser.add_argument('-generatePrivatePublic',help='Generate Private key and Public key',dest="generatePrivatePublic")
    parser.add_argument('-machineCode',help='machineCode',dest="machineCode")
    parser.add_argument('-date', help='Valid date(yyyymmdd)',dest="date")
    parser.add_argument('-reset', help='Generate a pair of new keys',dest="reset")
@@ -96,19 +97,19 @@ if __name__ == '__main__':
 
    #date="20210408"
    date = args.date
-   machineCode=args.machineCode
+   machineCode = args.machineCode
    #machineCode="34:c9:3d:47:94:a6"
 
-   #en_code=keyGen(key,machineCode,date,iv,mode) 
-   #generateEncodeFile(en_code,machineCode,date)
-   gen=input("Generate:(Y/N)")
+
+   gen = input("Generate:(Y/N)")
+   #gen=args.generatePrivatePublic
    if args.reset != '':
         generatePrivatePublic()
    
-   code=date
-   code+=machineCode
+   code = date
+   code+= machineCode
    
-   encode=encode_RSA(code,machineCode)
+   encode = encode_RSA(code,machineCode)
    
    #Base64 Encode
    #encode=base64.b64encode(str(encode).encode("utf-8"))

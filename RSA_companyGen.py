@@ -96,10 +96,10 @@ if __name__ == '__main__':
    args = parser.parse_args()
    #date=datetime.datetime.today().strftime("%Y%m%d")
 
-   date="20210413"
-   #date = args.date
-   #machineCode = args.machineCode
-   machineCode="34:c9:3d:47:94:a6"
+   #date="20210413"
+   date = args.date
+   machineCode = args.machineCode
+   #machineCode="34:c9:3d:47:94:a6"
 
 
    gen = input("Generate:(Y/N)")

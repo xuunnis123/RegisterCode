@@ -97,11 +97,17 @@ def formatCode(key):
 def inputCode(machineCode):
     en_code = args.code
     #en_code=input("CODE=")
+    print("en_code:", en_code)
+    if en_code == None:
+        return "No Code Exist"
     en_code = decode_RSA(en_code)
  
     if en_code == False:
         return "Not Validated User"
+    
+        
     generateAuthFile(en_code,machineCode)
+    return True
 
 def execute():
     flag = False
@@ -113,7 +119,7 @@ def execute():
     if os.path.isfile(filepath) == False:
         # generate code
         print("Gen")
-        inputCode(machineCode)
+        result=inputCode(machineCode)
         #en_code=input('Input your code:')
         #generateAuthFile(en_code,machineCode)
         # check code

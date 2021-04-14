@@ -20,8 +20,8 @@ from django.conf.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index , name='index'),
-    path('manage_app/',include('manage_app.urls')),
+    path('', views.IndexView.as_view()),
+    path('manage_app/',include('manage_app.urls',namespace='manage_app')),
     path('userAddUser/',views.addUser,name='addUser'),
     path('formpage/',views.form_name_view,name='form_page'),
 ]

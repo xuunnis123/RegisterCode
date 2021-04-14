@@ -1,10 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.urls import reverse_lazy
+from django.views.generic import View,TemplateView,ListView,DetailView,CreateView,UpdateView,DeleteView
+from . import models
+from django.views.generic.edit import FormView
 # Create your views here.
 
 from manage_app.models import Code
 from . import forms
 from manage_app.forms import NewUserForm
+
 # Create your views here.
 
 def index(request):
@@ -37,3 +42,36 @@ def addUser(request):
         else:
             print("ERROR FORM INVALID")
     return render(request,'manage_app/form_page.html',{'form':form})
+
+def generate(request):
+    return ""
+
+class CodeListView(ListView):
+    print("CodeListView")
+    context_object_name='code'
+    model= models.Code
+    template_name='manage_app/code_list.html'
+
+class CodeDetailView(DetailView):
+    
+    context_object_name='code_detail'
+    model=models.Code
+    template_name='manage_app/code_detail.html'
+
+class CodeCreateView(CreateView):
+    fields=('user','code','validate','mac_address')
+    model=models.Code
+    success_url= reverse_lazy("manage_app:list")
+class CodeUpdateView(UpdateView):
+    fields =('user','code','validate','mac_address')
+    model=models.Code
+    template_name="manage_app/form_page.html"
+    success_url= reverse_lazy("manage_app:list")
+class CodeDeleteView(DeleteView):
+    model=models.Code
+    success_url= reverse_lazy("manage_app:list")
+
+class IndexView(TemplateView):
+    template_name='manage_app/index.html'
+    model=models.Code
+    

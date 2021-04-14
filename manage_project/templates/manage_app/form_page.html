@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+{% extends "manage_app/base.html"%}
 {% load static %}
+{% block body_block %}
 {% load crispy_forms_tags %}
 <html lang="en" dir="ltr">
   <head>
@@ -8,7 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   </head>
   <body>
-    <h1> Record New Code</h1>
+    <h1>
+      {% if not form.instance.pk %}
+      Create Code
+      {% else %}
+      Update Code
+      {% endif %}
+  </h1>
+    <h1> Record Code</h1>
     <div class="container-fluid">
       <form method="POST" class="row g-3">
           {{ form|crispy }}
@@ -19,3 +28,4 @@
 
   </body>
 </html>
+{% endblock %}

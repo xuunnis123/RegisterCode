@@ -16,8 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from manage_app import views
+from django.conf.urls import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index , name='index'),
+    path('manage_app/',include('manage_app.urls')),
+    path('userAddUser/',views.addUser,name='addUser'),
+    path('formpage/',views.form_name_view,name='form_page'),
 ]

@@ -4,13 +4,12 @@ from django.urls import reverse_lazy
 from django.views.generic import View,TemplateView,ListView,DetailView,CreateView,UpdateView,DeleteView
 from . import models
 from django.views.generic.edit import FormView
-# Create your views here.
 
 from manage_app.models import Code
 from . import forms
 from manage_app.forms import NewUserForm
+from rsa_company_gen import encode_rsa
 
-# Create your views here.
 
 def index(request):
     code_list=Code.objects.order_by('user')
@@ -18,7 +17,7 @@ def index(request):
     
     return render(request,'manage_app/index.html',context=date_dict)
 
-    return render(request,'first_app/user.html',context=user_dict)
+   
 def form_name_view(request):
     form=forms.FormName()
     if request.method=='POST':
@@ -43,8 +42,16 @@ def addUser(request):
             print("ERROR FORM INVALID")
     return render(request,'manage_app/form_page.html',{'form':form})
 
-def generate(request):
-    return ""
+def generate(request,mac_address,datetime):
+    datetime=request.POST['validate']
+    mac_address=request.POST['mac_address']
+    print("Generate")
+    date=datetime.split("-")
+    datetime=date[0]+date[1]+date[2]
+    content=datetime+mac_address
+    encode={"code",encode_rsa(content,mac_address)}
+
+    return render(request,'manage_app/form_page.html',encode)
 
 class CodeListView(ListView):
     print("CodeListView")

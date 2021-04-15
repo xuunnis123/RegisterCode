@@ -4,9 +4,10 @@ Generate RSA Key
 import base64
 from Crypto import Random
 from Crypto.PublicKey import RSA
-
+import json
 from Crypto.Signature import PKCS1_v1_5 as Signature_pkcs1_v1_5
 from Crypto.Hash import SHA
+
 
 
 
@@ -32,6 +33,12 @@ def gen_private_public():
     public_key=key.publickey().exportKey()
     with open("public.pem", "wb") as file_content:
         file_content.write(public_key)
+
+def generate_licensefile(encode):
+
+    data = {'encode':encode}
+    with open('licensefile.skm', 'w') as file_content:
+        json.dump(data,file_content)
 
 def encode_rsa(content,machine_code):
     """
@@ -66,10 +73,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     #date=datetime.datetime.today().strftime("%Y%m%d")
 
-    #date="20210413"
-    date = args.date
-    machine_code = args.machine_code
-    #machine_code="34:c9:3d:47:94:a6"
+    date="20210418"
+    #date = args.date
+    #machine_code = args.machine_code
+    machine_code="34:c9:3d:47:94:a6"
 
 
     gen = input("Generate:(Y/N)")
@@ -81,5 +88,6 @@ if __name__ == '__main__':
     code+= machine_code
     print("code="+code)
     encode = encode_rsa(code,machine_code)
+    generate_licensefile(encode)
     print(encode)
     

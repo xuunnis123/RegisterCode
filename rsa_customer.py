@@ -58,17 +58,6 @@ def decode_rsa(encode):
         return content
     else: return is_verify
 
-def generate_auth_file(en_code):
-    """
-    To generate auth-file
-    """
-    en_code = en_code.encode("utf-8")
-    en_code = base64.b64encode(en_code)
-    # Decoding the Base64 bytes to string
-    en_code = en_code.decode("UTF-8")
-    data = {'encode':en_code}
-    with open('licensefile.skm', 'w') as file_content:
-        json.dump(data,file_content)
 
 def check_authfile():
     """
@@ -80,20 +69,7 @@ def check_authfile():
             return save['encode']
         else: return "Error Code."
 
-def input_code():
-    """
-    User input Code and ready to generate auth-file
-    """
-    en_code = args.code
-    #en_code=input("CODE=")
-    print("en_code:", en_code)
-    if en_code is None:
-        return "No Code Exist"
-    en_code = decode_rsa(en_code)
-    if en_code is False:
-        return "Not Validated User"
-    generate_auth_file(en_code)
-    return True
+
 
 def execute():
     """

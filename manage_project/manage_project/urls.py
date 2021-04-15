@@ -22,6 +22,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.IndexView.as_view()),
     path('manage_app/',include('manage_app.urls',namespace='manage_app')),
-    path('userAddUser/',views.addUser,name='addUser'),
-    path('formpage/',views.form_name_view,name='form_page'),
 ]

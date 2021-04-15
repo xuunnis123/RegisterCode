@@ -17,41 +17,50 @@ def index(request):
     
     return render(request,'manage_app/index.html',context=date_dict)
 
-   
-def form_name_view(request):
-    form=forms.FormName()
-    if request.method=='POST':
-        form=forms.FormName(request.POST)
-        if form.is_valid():
-            print("validation IS SUCCESS")
-            print("User="+form.cleaned_data['user'])
-            print("Code="+form.cleaned_data['code'])
-            print("Validate="+form.cleaned_data['validate'])
-            print("mac_address="+form.cleaned_data['mac_address'])
-    return render(request,'manage_app/form_page.html',{'form':form})
-
-def addUser(request):
-    form = NewUserForm()
-    #print("form="+form)
-    if request.method == "POST":
-        form= NewUserForm(request.POST)
-        if form.is_valid():
-            form.save(commit=True)
-            return index(request)
-        else:
-            print("ERROR FORM INVALID")
-    return render(request,'manage_app/form_page.html',{'form':form})
-
 def generate(request,mac_address,datetime):
-    datetime=request.POST['validate']
-    mac_address=request.POST['mac_address']
+    datetime=request.POST.get('validate')
+    mac_address=request.POST.get('mac_address')
     print("Generate")
     date=datetime.split("-")
     datetime=date[0]+date[1]+date[2]
     content=datetime+mac_address
     encode={"code",encode_rsa(content,mac_address)}
 
-    return render(request,'manage_app/form_page.html',encode)
+def CodeGen(request):
+    if request.method == "POST":
+        datetime=request.POST.get('validate')
+        mac_address=request.POST.get('mac_address')
+        date=datetime.split("-")
+        datetime=date[0]+date[1]+date[2]
+        content=datetime+mac_address
+        print(request.POST.objects.get(pk=pk))
+        encode={"code",encode_rsa(content,mac_address)}
+        print(encode)
+        return render(request,"",encode)
+
+class CodeGenView(CreateView):
+    print("CodeGenView")
+    fields=('user','validate','mac_address')
+    model=models.Code
+    template_name='manage_app/code_gen.html'
+    #success_url= reverse_lazy("manage_app:create")
+    
+    def get_success_url(self):
+   
+        print("test=",self.get_object().id)
+        return reverse_lazy('update',kwargs={'pk': self.get_object().id})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    def generate(self,request):
+        datetime=request.POST.get('validate')
+        mac_address=equest.POST.get('mac_address')
+        print("datetrime:",datetrime)
+        date=datetime.split("-")
+        datetime=date[0]+date[1]+date[2]
+        content=datetime+mac_address
+        encode={"code",encode_rsa(content,mac_address)}
+        print(encode)
 
 class CodeListView(ListView):
     print("CodeListView")
@@ -72,7 +81,7 @@ class CodeCreateView(CreateView):
 class CodeUpdateView(UpdateView):
     fields =('user','code','validate','mac_address')
     model=models.Code
-    template_name="manage_app/form_page.html"
+    template_name="manage_app/code_form.html"
     success_url= reverse_lazy("manage_app:list")
 class CodeDeleteView(DeleteView):
     model=models.Code

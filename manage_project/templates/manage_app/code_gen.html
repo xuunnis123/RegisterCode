@@ -1,0 +1,18 @@
+{% extends "manage_app/base.html"%}
+{% load static %}
+{% block body_block %}
+{% load crispy_forms_tags %}
+<h1>  
+    Generate Code
+
+</h1>
+
+<form method="post" action="{% url "manage_app:gen" %}">
+
+    {{ form|crispy }}
+    {% csrf_token %}
+    <p></p>
+    <input type="submit" class="btn btn-primary" value="Next"> 
+</form>
+
+{% endblock%}

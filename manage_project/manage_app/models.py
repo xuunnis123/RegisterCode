@@ -3,7 +3,7 @@ from django.urls import reverse
 # Create your models here.
 class Code(models.Model):
     user=models.CharField(max_length=264,unique=True)
-    code=models.CharField(max_length=264,unique=True)
+    code=models.CharField(max_length=264)
     validate=models.DateField()
     mac_address=models.CharField(max_length=264,unique=True)
 

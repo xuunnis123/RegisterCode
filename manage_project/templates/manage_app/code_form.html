@@ -1,0 +1,23 @@
+{% extends "manage_app/base.html"%}
+{% load static %}
+{% block body_block %}
+{% load crispy_forms_tags %}
+<h1>
+    {% if not form.instance.pk %}
+    Create Code
+    {% else %}
+    Update Code
+    {% endif %}
+</h1>
+
+<form method="post">
+
+    {{ form|crispy }}
+    {% csrf_token %}
+   
+    
+    <p></p>
+    <input type="submit" class="btn btn-primary" value="Submit"> 
+</form>
+
+{% endblock%}

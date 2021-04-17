@@ -1,0 +1,23 @@
+
+{% extends "manage_app/base.html"%}
+
+{% block body_block %}
+    <h1>Welcome to a list of all the Codes:</h1>
+    <table class="table">
+    <thead class="table-dark">
+        <th>User Name</th>
+        <th>Code</th>
+        <th>Validate Date</th>
+        <th>MAC Address</th>
+    </thead>
+        {% for uni_code in code %}
+        <tr>
+            <td><a href="{% url 'manage_app:detail' uni_code.id %}">{{ uni_code.user }}</a></td>
+            <td>{{ uni_code.code }}</td>
+            <td>{{ uni_code.validate }}</td>
+            <td>{{ uni_code.mac_address }}</td>
+        </tr>
+        {% endfor %}
+    
+    </table>
+    {% endblock %}

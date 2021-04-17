@@ -54,20 +54,10 @@ def decode_rsa(encode):
 
     is_verify = verifier.verify(hsmsg, base64.b64decode(signature))
     if is_verify is True:
+        print("is_verify:",content)
         return content
     else: return is_verify
 
-def generate_auth_file(en_code):
-    """
-    To generate auth-file
-    """
-    en_code = en_code.encode("utf-8")
-    en_code = base64.b64encode(en_code)
-    # Decoding the Base64 bytes to string
-    en_code = en_code.decode("UTF-8")
-    data = {'encode':en_code}
-    with open('licensefile.skm', 'w') as file_content:
-        json.dump(data,file_content)
 
 def check_authfile():
     """
@@ -79,20 +69,7 @@ def check_authfile():
             return save['encode']
         else: return "Error Code."
 
-def input_code():
-    """
-    User input Code and ready to generate auth-file
-    """
-    en_code = args.code
-    #en_code=input("CODE=")
-    print("en_code:", en_code)
-    if en_code is None:
-        return "No Code Exist"
-    en_code = decode_rsa(en_code)
-    if en_code is False:
-        return "Not Validated User"
-    generate_auth_file(en_code)
-    return True
+
 
 def execute():
     """
@@ -102,34 +79,24 @@ def execute():
     #### basic info.####
     filepath = os.getcwd()+"/licensefile.skm"
     if os.path.isfile(filepath) is False:
-        # generate code
-        print("Gen")
-        result=input_code()
-        #en_code=input('Input your code:')
-        #generate_auth_file(en_code,machine_code)
-        # check code
-    #iv = os.urandom(16) #使用密碼學安全的隨機方法os.urandom
+        return "Do not Exist File."
     record_code = check_authfile()
-    record_code = record_code.encode("UTF-8")
-    record_code = base64.b64decode(record_code)
-    record_code = record_code.decode("UTF-8")
+    record_code = decode_rsa(record_code)
+    #record_code = record_code.encode("UTF-8")
+    #ecord_code = base64.b64decode(record_code)
+    #record_code = record_code.decode("UTF-8")
     result = check_key(record_code)
     if result is True:
         flag = True
     else:
         print(result)
         print("execute again")
-        os.remove("licensefile.skm")
-        #input_code(machine_code)
-        #execute()
+        #os.remove("licensefile.skm")
+     
     return flag
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('-code',help='Input code',dest="code")
-    parser.add_argument('-revalidate',dest="validate_code")
-    #parser.add_argument('-input_code',action='store_const',const=)
-    args = parser.parse_args()
+
     if execute() is True:
         print("Continue")
     else:print("Cannot Validate!!")

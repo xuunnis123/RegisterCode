@@ -7,3 +7,5 @@ ezra-HP-Pavilion-Gaming-Laptop-17-cd1xxx.json
 public.pem
 private.pem
 testRSA.py
+*.sqlite3
+*.sqlite3-journal

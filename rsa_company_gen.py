@@ -73,7 +73,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     #date=datetime.datetime.today().strftime("%Y%m%d")
 
-    date="20210418"
+    date="20210421"
     #date = args.date
     #machine_code = args.machine_code
     machine_code="34:c9:3d:47:94:a6"

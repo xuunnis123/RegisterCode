@@ -11,9 +11,9 @@
         <th>MAC Address</th>
     </thead>
         {% for uni_code in all_item %}
-        {{uni_code.id}}
+
         <tr>
-            <td><a href="/register/{{ uni_code.id}}">{{ uni_code.user }}</a></td>
+            <td><a href="/register/{{uni_code.id}}">{{ uni_code.user }}</a></td>
             <td>{{ uni_code.code }}</td>
             <td>{{ uni_code.expired }}</td>
             <td>{{ uni_code.mac_address }}</td>

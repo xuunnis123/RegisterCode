@@ -35,6 +35,7 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 codedb = []
 all_item=[]
+uni_item=[]
 class CodeIn(BaseModel):
     user: str
     code: Optional[str]=False
@@ -56,6 +57,13 @@ async def connect():
 async def shutdown():
     await database.disconnect()
 
+@app.get("/")
+async def main(request: Request):
+    print("main")
+    query = notes.select()
+    all_item=await database.fetch_all(query)
+    return templates.TemplateResponse("code_list.html", {"request": request,"all_item":all_item})
+
 
 @app.post('/register',response_class=HTMLResponse)
 async def create(request:Request,user:str=Form(...),expired:str=Form(...),mac_address:str=Form(...)):
@@ -75,23 +83,7 @@ async def create(request:Request,user:str=Form(...),expired:str=Form(...),mac_ad
     return RedirectResponse(url='/',status_code=status.HTTP_302_FOUND)
     #return templates.TemplateResponse('index.html',{'request': request})
 
-'''
-@app.post('/register',response_model=Code)
-async def create(code:CodeIn):
-    code_arg = code.expired
-    code_arg+= code.mac_address
-    encode=encode_rsa(code_arg,code.mac_address)
-    code.code=encode
-    query=notes.insert().values(
-        user=code.user,
-        expired=code.expired,
-        code=encode,
-        mac_address=code.mac_address
-    )
-    record_id=await database.execute(query)
 
-    return {**code.dict(),"id":record_id}
-'''
 
 @app.get("/create")
 async def create_form(request:Request):
@@ -104,17 +96,29 @@ async def read_notes(request:Request):
     query = notes.select()
     all_item=await database.fetch_all(query)
     return templates.TemplateResponse('code_list.html',{"request":request,"notes":all_item})
-'''
-@app.get("/register/", response_class=List[Code])
-async def read_notes():
-    query = notes.select()
-    return await database.fetch_all(query)
-'''
+
+
 @app.get('/register/{code_id}',response_model=Code)
-async def get_one(code_id:int):
+async def get_one(request:Request,code_id:int):
     query=notes.select().where(notes.c.id==code_id)
-    row=await database.fetch_one(query)
-    return row
+    print(query)
+    uni_item=await database.fetch_one(query)
+    print("uni_item:",uni_item)
+    print(uni_item['user'])
+    save=[]
+    print("test=",uni_item[1])
+    print("test_type=",type(uni_item[1]))
+    for row in uni_item:
+        
+        print(row)
+        save.append(row)
+    print("save=",save)
+    return  templates.TemplateResponse('code_detail.html',{"request":request,"row":uni_item})
+
+@app.get('/update/{code_id}',response_model=Code)
+def jump_to_update(request:Request,code_id:int,row:list):
+    print("row=",row)
+    return  templates.TemplateResponse('code_update.html',{"request":request,"code_id":code_id,"row":uni_item})
 
 @app.put('/register/{code_id}',response_model=Code,response_model_include={"id", "user","code","expired","mac_address"})
 async def update(code_id:int ,r: CodeIn=Depends()):
@@ -135,18 +139,18 @@ async def update(code_id:int ,r: CodeIn=Depends()):
     user=await database.fetch_one(query)
     return user
 
+@app.delete("/delete/{code_id}")
+def jump_to_confirm_delete(request:Request,code_id:int):
+    print("jump_to_confirm_delete")
+    return  templates.TemplateResponse('code_confirm_delete.html',{"request":request,"code_id":code_id})
+
 @app.delete("/register/{code_id}",response_model=Code)
 async def delete(code_id:int):
+    print("delete")
     query=notes.delete().where(notes.c.id == code_id)
-    return await database.execute(query)
+    await database.execute(query)
 
-@app.get("/")
-async def main(request: Request):
-    print("main")
-    query = notes.select()
-    all_item=await database.fetch_all(query)
-    return templates.TemplateResponse("code_list.html", {"request": request,"all_item":all_item})
-
+######
 @app.get("/code")
 def get_posts():
     return codedb

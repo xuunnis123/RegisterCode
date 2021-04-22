@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 
 {% block body_block %}
-<h1>Delete {{code.user}}?</h1>
-<form method="post">
-    {% csrf_token %}
+
+<h1>Delete {{code_id}}?</h1>
+<form method="POST" action="/register/{code_id}" >
+
     <input type="submit" class='btn btn-danger' value="Delete">
-    <a class='btn btn-warning' href="{% url 'manage_app:detail' pk=code.pk %}">Cancel</a>
+    <a class='btn btn-warning' href="/">Cancel</a>
 </form>
 
 {% endblock %}

@@ -1,5 +1,13 @@
 {% extends 'base.html' %}
 {% block body_block %}
+
+<script>
+    function deleteData(rowId){
+        fetch("/register/"+rowId,{
+            method: "DELETE",
+        });
+    }
+</script>
 <div class="jumbotron">
     <h1>Welcome to the Code Detail Page</h1>
     <h2>Code details:</h2>
@@ -11,29 +19,30 @@
             <th>MAC Address</th>
         </thead>
         <tr>
-            <td>
-            {{code_detail.user}}
+            <td id="user">
+            {{row.user}}
             </td>
         
-            <td>
-            {{code_detail.code }}
+            <td id="code">
+            {{row.code }}
             </td>
         
-            <td>
-                {{code_detail.validate}}
+            <td id="expired">
+                {{row.expired}}
             </td>
             
        
-            <td>
-                {{code_detail.mac_address}}
+            <td id="mac_address">
+                {{row.mac_address}}
             </td>
         </tr>
     </table>
 
 </div>
 <div class="container">
-    <p><a class='btn btn-warning' href="{% url 'manage_app:update' pk=code_detail.pk %}">Update</a>
-    <a class='btn btn-danger' href="{% url 'manage_app:delete' pk=code_detail.pk %}">Delete</a></p>
+    <p><a class='btn btn-warning' href="/update/{{row.id}}">Update</a>
+    <p onclick='deleteData({{row.id}})'>Delete</p><!--<a class='btn btn-danger' href="/delete/{{row.id}}"></a>-->
+    <a class='btn btn-danger' href="/">Cancel</a></p>
 </div>
 {% endblock %}
 <h1></h1>

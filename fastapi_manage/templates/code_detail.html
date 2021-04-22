@@ -1,48 +1,35 @@
 {% extends 'base.html' %}
 {% block body_block %}
 
-<script>
-    function deleteData(rowId){
-        fetch("/register/"+rowId,{
-            method: "DELETE",
-        });
-    }
-</script>
 <div class="jumbotron">
     <h1>Welcome to the Code Detail Page</h1>
     <h2>Code details:</h2>
-    <table class="table">
-        <thead class="table-dark">
-            <th>User Name</th>
-            <th>Code</th>
-            <th>Validate Date</th>
-            <th>MAC Address</th>
-        </thead>
-        <tr>
-            <td id="user">
-            {{row.user}}
-            </td>
-        
-            <td id="code">
-            {{row.code }}
-            </td>
-        
-            <td id="expired">
-                {{row.expired}}
-            </td>
-            
-       
-            <td id="mac_address">
-                {{row.mac_address}}
-            </td>
-        </tr>
-    </table>
+    <form action="/register/{row.id}" enctype="multipart/form-data" method="post">
+        <label>User</label>
+        <br>
+        <input name="user" type="user" value={{user}}>
+        <br>
+        <br>
+        <label> Code</label>
+        <br>
+        {{code}}
+        <br>
+        <br>
+        <label>Expired</label>
+        <br>
+        <input name="expired" type="expired" value={{expired}}>
+        <br>
+        <br>
+        <label>Mac Address</label>
+        <br>
+        <input name="mac_address" type="mac_address" value={{mac_address}} >
+        <br>
+        <br>
+        <input type="submit" class="btn btn-primary" value="Update"><a class='btn btn-danger' href="/delete/{{row.id}}">Delete</a>
+        <a class='btn btn-warning' href="/">Cancel</a>
+    </form>
 
 </div>
-<div class="container">
-    <p><a class='btn btn-warning' href="/update/{{row.id}}">Update</a>
-    <p onclick='deleteData({{row.id}})'>Delete</p><!--<a class='btn btn-danger' href="/delete/{{row.id}}"></a>-->
-    <a class='btn btn-danger' href="/">Cancel</a></p>
-</div>
+
 {% endblock %}
 <h1></h1>

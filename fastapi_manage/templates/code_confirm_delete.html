@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 
 {% block body_block %}
-
+<script>
+    function deleteData(rowId){
+        fetch("/register/"+rowId,{
+            method: "DELETE",
+        });
+        
+    }
+</script>
 <h1>Delete {{code_id}}?</h1>
-<form method="POST" action="/register/{code_id}" >
-
-    <input type="submit" class='btn btn-danger' value="Delete">
-    <a class='btn btn-warning' href="/">Cancel</a>
+<p class='btn btn-danger' onclick='deleteData({{code_id}})'>Delete</p>
+<p><a class='btn btn-warning' href="/">Cancel</a></p>
 </form>
 
 {% endblock %}

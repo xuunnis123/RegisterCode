@@ -103,17 +103,9 @@ async def get_one(request:Request,code_id:int):
     query=notes.select().where(notes.c.id==code_id)
     print(query)
     uni_item=await database.fetch_one(query)
-    print("uni_item:",uni_item)
-    print(uni_item['user'])
-    save=[]
-    print("test=",uni_item[1])
-    print("test_type=",type(uni_item[1]))
-    for row in uni_item:
-        
-        print(row)
-        save.append(row)
-    print("save=",save)
-    return  templates.TemplateResponse('code_detail.html',{"request":request,"row":uni_item})
+
+
+    return  templates.TemplateResponse('code_detail.html',{"request":request,"row":uni_item,"user":uni_item['user'],"code":uni_item['code'],"expired":uni_item['expired'],"mac_address":uni_item['mac_address']})
 
 @app.get('/update/{code_id}',response_model=Code)
 def jump_to_update(request:Request,code_id:int,row:list):
@@ -139,7 +131,7 @@ async def update(code_id:int ,r: CodeIn=Depends()):
     user=await database.fetch_one(query)
     return user
 
-@app.delete("/delete/{code_id}")
+@app.get("/delete/{code_id}")
 def jump_to_confirm_delete(request:Request,code_id:int):
     print("jump_to_confirm_delete")
     return  templates.TemplateResponse('code_confirm_delete.html',{"request":request,"code_id":code_id})
@@ -149,7 +141,7 @@ async def delete(code_id:int):
     print("delete")
     query=notes.delete().where(notes.c.id == code_id)
     await database.execute(query)
-
+    return RedirectResponse('/')
 ######
 @app.get("/code")
 def get_posts():

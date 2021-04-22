@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block body_block %}
+<div class="jumbotron">
+    <h1>Welcome to the Code Detail Page</h1>
+    <h2>Code details:</h2>
+    <table class="table">
+        <thead class="table-dark">
+            <th>User Name</th>
+            <th>Code</th>
+            <th>Validate Date</th>
+            <th>MAC Address</th>
+        </thead>
+        <tr>
+            <td>
+            {{code_detail.user}}
+            </td>
+        
+            <td>
+            {{code_detail.code }}
+            </td>
+        
+            <td>
+                {{code_detail.validate}}
+            </td>
+            
+       
+            <td>
+                {{code_detail.mac_address}}
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div class="container">
+    <p><a class='btn btn-warning' href="{% url 'manage_app:update' pk=code_detail.pk %}">Update</a>
+    <a class='btn btn-danger' href="{% url 'manage_app:delete' pk=code_detail.pk %}">Delete</a></p>
+</div>
+{% endblock %}
+<h1></h1>

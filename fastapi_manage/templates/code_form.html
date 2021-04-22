@@ -1,0 +1,29 @@
+{% extends "base.html"%}
+{% block body_block %}
+<h1> 
+    Create Code
+</h1>
+
+<body>
+    <div class="container">
+        <form action="/register" enctype="multipart/form-data" method="post">
+            <label>User</label>
+            <br>
+            <input name="user" type="user" >
+            <br>
+            <label>Expired</label>
+            <br>
+            <input name="expired" type="expired" >
+            <br>
+            <br>
+            <label>Mac Address</label>
+            <br>
+            <input name="mac_address" type="mac_address" >
+            <br>
+            
+            <input type="submit">
+        </form>
+    </div> <!-- /container -->
+</body>
+
+{% endblock%}

@@ -1,0 +1,147 @@
+<html>
+    <head>
+        <title>CODE APP</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+        />
+        <script
+          src="https://code.jquery.com/jquery-3.1.1.min.js"
+          integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+          crossorigin="anonymous"
+        ></script>
+        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+      </head>
+<body>
+    <script>
+    $(document).ready(function () {
+      var num;
+      var input;
+      $("#add_button").click(function () {
+        $("#add").modal("show");
+      });
+      $("#save_button").click(function () {
+        user = $("#input_user").val();
+        expired = $("#input_expired").val();
+        mac_address=$("#input_mac_address").val();
+        console.log(user);
+        $.ajax({
+          url: "/register",
+          type: "POST",
+          //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
+          data: JSON.stringify({ "user": user,"expired":expired, "mac_address":mac_address }),
+
+          error:function(){
+          alert("Failed");
+          },
+          success:function(){
+          alert("成功");
+        }   
+        
+    }).then(setTimeout(location.reload.bind(location), 200));
+      });
+      $(".mini.ui.primary.button").click(function () {
+        num = this.id;
+        console.log(num);
+        $.ajax({
+          url: "/register/" + num,
+          type: "GET",
+        }).then(function (c) {
+          $("#edit_text").val(c.expired);
+          $("#update").modal("show");
+        });
+      });
+      $("#edit_save_button").click(function () {
+        input = $("#edit_text").val();
+        console.log(input);
+        $.ajax({
+          url: "/notes/" + num,
+          type: "PUT",
+          data: JSON.stringify({ item: input, item_status: false }),
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
+      $(".mini.ui.green.button").click(function () {
+        num = this.id;
+        input = document.getElementById("saved_text_" + num).innerHTML;
+        console.log(input);
+        $.ajax({
+          url: "/notes/" + num,
+          type: "PUT",
+          data: JSON.stringify({ item: input, item_status: true }),
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
+      $(".mini.ui.red.button").click(function () {
+        num = this.id;
+        input = document.getElementById("saved_text_" + num).innerHTML;
+        console.log(input);
+        $.ajax({
+          url: "/notes/" + num,
+          type: "DELETE",
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
+    });
+  </script>
+    
+<div class="ui raised very padded text container segment">
+    <h1 style="text-align: center;">Code LIST</h1>
+    <button class="ui primary button" id="add_button">
+      <i class="plus icon"></i>
+      Add
+    </button>
+    <h2 class="ui header">Code Management</h2>
+    <hr />
+    <div class="ui middle aligned divided list">
+      {% for item in all_item%}
+      <div class="item">
+        <div class="right floated content">
+          <button class="mini ui primary button" id="{{item['id']}}">
+            <i class="pencil alternate icon"></i>
+            Edit
+          </button>
+          <!---
+          <button class="mini ui green button" id="{{item['']}}">
+            <i class="check icon"></i>
+            Complete
+          </button>
+        -->
+
+          <button class="mini ui red button" id="{{item['id']}}">
+            <i class="trash icon"></i>
+            Delete
+          </button>
+        </div>
+        <div class="content">
+          <p id="saved_text_{{item['user']}}">{{item['user']}}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+   
+    <div class="ui tiny modal" id="add">
+      <div class="header">New Task</div>
+      <div class="content">
+        <div class="ui fluid icon input">
+          <input type="text" placeholder="New user....." id="input_user" />
+          <input type="text" placeholder="Expired....." id="input_expired" />
+          <input type="text" placeholder="MAC Address....." id="input_mac_address" />
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui approve button" id="save_button">Save</div>
+      </div>
+    </div>
+    <div class="ui tiny modal" id="update">
+      <div class="header">Update Code</div>
+      <div class="content">
+        <div class="ui fluid icon input">
+          <input type="text" id="edit_text" />
+        </div>
+      </div>
+      <div class="actions">
+        <div class="ui approve button" id="edit_save_button">Save</div>
+      </div>
+    </div>
+  </div>
+  </body>
+
+</html>

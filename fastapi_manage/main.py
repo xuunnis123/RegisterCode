@@ -62,58 +62,60 @@ async def main(request: Request):
     print("main")
     query = notes.select()
     all_item=await database.fetch_all(query)
-    return templates.TemplateResponse("code_list.html", {"request": request,"all_item":all_item})
+    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
 
 
-@app.post('/register',response_class=HTMLResponse)
-async def create(request:Request,user:str=Form(...),expired:str=Form(...),mac_address:str=Form(...)):
-    print("creating")
-    print("user:",user)
-    code_arg = expired
-    code_arg+= mac_address
-    encode=encode_rsa(code_arg,mac_address)
+@app.post('/register')
+async def create(code:CodeIn):
+    print(code.user)
+    print(code.expired)
+    print(code.mac_address)
+    code_arg = code.expired
+    code_arg+= code.mac_address
+    encode=encode_rsa(code_arg,code.mac_address)
     #code.code=encode
     query=notes.insert().values(
-        user=user,
-        expired=expired,
+        user=code.user,
+        expired=code.expired,
         code=encode,
-        mac_address=mac_address
+        mac_address=code.mac_address
     )
     record_id=await database.execute(query)
-    return RedirectResponse(url='/',status_code=status.HTTP_302_FOUND)
+    return {
+        "code":"ok",
+        "message":"success"
+    }
     #return templates.TemplateResponse('index.html',{'request': request})
 
 
 
-@app.get("/create")
-async def create_form(request:Request):
-    print("create")
-    return templates.TemplateResponse('code_form.html',{"request":request,"notes":all_item})
-
-@app.get("/register/")
-async def read_notes(request:Request):
-    print("read")
-    query = notes.select()
-    all_item=await database.fetch_all(query)
-    return templates.TemplateResponse('code_list.html',{"request":request,"notes":all_item})
-
-
-@app.get('/register/{code_id}',response_model=Code)
+@app.get('/register/{code_id}')
 async def get_one(request:Request,code_id:int):
     query=notes.select().where(notes.c.id==code_id)
     print(query)
     uni_item=await database.fetch_one(query)
 
-
-    return  templates.TemplateResponse('code_detail.html',{"request":request,"row":uni_item,"user":uni_item['user'],"code":uni_item['code'],"expired":uni_item['expired'],"mac_address":uni_item['mac_address']})
+    print(uni_item)
+    if uni_item is None:
+        return{
+            "code":"ok",
+            "message":"no notes found"
+        }
+    return {
+        "code":"ok",
+        "message":"success",
+        "user":uni_item['user'],
+        "expired":uni_item['expired'],
+        "mac_address":uni_item['mac_address']
+    }
 
 @app.get('/update/{code_id}',response_model=Code)
 def jump_to_update(request:Request,code_id:int,row:list):
     print("row=",row)
     return  templates.TemplateResponse('code_update.html',{"request":request,"code_id":code_id,"row":uni_item})
 
-@app.put('/register/{code_id}',response_model=Code,response_model_include={"id", "user","code","expired","mac_address"})
-async def update(code_id:int ,r: CodeIn=Depends()):
+@app.put('/register/{code_id}}')
+async def update(code:Code,code_id:int ,r: CodeIn=Depends()):
     code_arg = r.expired
     code_arg+= r.mac_address
     encode=encode_rsa(code_arg,r.mac_address)
@@ -129,7 +131,13 @@ async def update(code_id:int ,r: CodeIn=Depends()):
    
     query=notes.select().where(notes.c.id == record_id)
     user=await database.fetch_one(query)
-    return user
+    return {
+        "code":"ok",
+        "message":"success",
+        "id":code_id,
+        "expired":code.expired,
+        "mac_address":code.mac_address
+    }
 
 @app.get("/delete/{code_id}")
 def jump_to_confirm_delete(request:Request,code_id:int):

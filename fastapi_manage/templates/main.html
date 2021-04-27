@@ -97,21 +97,18 @@
             <i class="pencil alternate icon"></i>
             Edit
           </button>
-          <!---
-          <button class="mini ui green button" id="{{item['']}}">
-            <i class="check icon"></i>
-            Complete
-          </button>
-        -->
-    
+          
           <button class="mini ui red button" id="{{item['id']}}">
             <i class="trash icon"></i>
             Delete
           </button>
         </div>
         <div class="content">
-          <p id="saved_text_{{item['id']}}">{{item['user']}}</p>
+          <p id="saved_text_{{item['id']}}">User:{{item['user']}}</p>
+          <p>Expired:{{item['expired']}}</p>
+          <p>MAC_ADDRESS:{{item['mac_address']}}</p>
         </div>
+        
       </div>
       {% endfor %}
     </div>
@@ -133,8 +130,11 @@
       <div class="header">Update Code</div>
       <div class="content">
         <div class="ui fluid icon input">
+           <p>User </p> 
           <input type="text" id="edit_user" />
+          <p>Expired </p>
           <input type="text" id="edit_expired" />
+          <p>MAC Address </p>
           <input type="text" id="edit_mac_address" />
         </div>
       </div>

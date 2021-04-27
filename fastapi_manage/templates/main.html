@@ -31,13 +31,6 @@
           //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
           data: JSON.stringify({ "user": user,"expired":expired, "mac_address":mac_address }),
 
-          error:function(){
-          alert("Failed");
-          },
-          success:function(){
-          alert("成功");
-        }   
-        
     }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.primary.button").click(function () {
@@ -75,7 +68,7 @@
         input = document.getElementById("saved_text_" + num).innerHTML;
         console.log(input);
         $.ajax({
-          url: "/notes/" + num,
+          url: "/register/" + num,
           type: "DELETE",
         }).then(setTimeout(location.reload.bind(location), 200));
       });
@@ -104,14 +97,14 @@
             Complete
           </button>
         -->
-
+            {{item['id']}}
           <button class="mini ui red button" id="{{item['id']}}">
             <i class="trash icon"></i>
             Delete
           </button>
         </div>
         <div class="content">
-          <p id="saved_text_{{item['user']}}">{{item['user']}}</p>
+          <p id="saved_text_{{item['id']}}">{{item['user']}}</p>
         </div>
       </div>
       {% endfor %}

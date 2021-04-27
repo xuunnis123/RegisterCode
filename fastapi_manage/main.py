@@ -144,12 +144,15 @@ def jump_to_confirm_delete(request:Request,code_id:int):
     print("jump_to_confirm_delete")
     return  templates.TemplateResponse('code_confirm_delete.html',{"request":request,"code_id":code_id})
 
-@app.delete("/register/{code_id}",response_model=Code)
+@app.delete("/register/{code_id}")
 async def delete(code_id:int):
     print("delete")
     query=notes.delete().where(notes.c.id == code_id)
     await database.execute(query)
-    return RedirectResponse('/')
+    return {
+        "code":"ok",
+        "Message":"Deleted Code "+ str(code_id)
+    }
 ######
 @app.get("/code")
 def get_posts():

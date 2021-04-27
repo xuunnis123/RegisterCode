@@ -40,17 +40,23 @@
           url: "/register/" + num,
           type: "GET",
         }).then(function (c) {
-          $("#edit_text").val(c.expired);
+          $("#edit_user").val(c.user);
+          $("#edit_expired").val(c.expired);
+          $("#edit_mac_address").val(c.mac_address);
           $("#update").modal("show");
         });
       });
       $("#edit_save_button").click(function () {
-        input = $("#edit_text").val();
-        console.log(input);
+        
+        user = $("#edit_user").val();
+        expired = $("#edit_expired").val();
+        mac_address=$("#edit_mac_address").val();
+        console.log(user);
+        alert(user);
         $.ajax({
-          url: "/notes/" + num,
+          url: "/register/" + num,
           type: "PUT",
-          data: JSON.stringify({ item: input, item_status: false }),
+          data: JSON.stringify({ "user": user,"expired":expired, "mac_address":mac_address }),
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.green.button").click(function () {
@@ -58,7 +64,7 @@
         input = document.getElementById("saved_text_" + num).innerHTML;
         console.log(input);
         $.ajax({
-          url: "/notes/" + num,
+          url: "/register/" + num,
           type: "PUT",
           data: JSON.stringify({ item: input, item_status: true }),
         }).then(setTimeout(location.reload.bind(location), 200));
@@ -97,7 +103,7 @@
             Complete
           </button>
         -->
-            {{item['id']}}
+    
           <button class="mini ui red button" id="{{item['id']}}">
             <i class="trash icon"></i>
             Delete
@@ -127,7 +133,9 @@
       <div class="header">Update Code</div>
       <div class="content">
         <div class="ui fluid icon input">
-          <input type="text" id="edit_text" />
+          <input type="text" id="edit_user" />
+          <input type="text" id="edit_expired" />
+          <input type="text" id="edit_mac_address" />
         </div>
       </div>
       <div class="actions">

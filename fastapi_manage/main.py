@@ -67,9 +67,7 @@ async def main(request: Request):
 
 @app.post('/register')
 async def create(code:CodeIn):
-    print(code.user)
-    print(code.expired)
-    print(code.mac_address)
+
     code_arg = code.expired
     code_arg+= code.mac_address
     encode=encode_rsa(code_arg,code.mac_address)
@@ -111,20 +109,18 @@ async def get_one(request:Request,code_id:int):
 
 @app.get('/update/{code_id}',response_model=Code)
 def jump_to_update(request:Request,code_id:int,row:list):
-    print("row=",row)
     return  templates.TemplateResponse('code_update.html',{"request":request,"code_id":code_id,"row":uni_item})
 
-@app.put('/register/{code_id}}')
-async def update(code:Code,code_id:int ,r: CodeIn=Depends()):
-    code_arg = r.expired
-    code_arg+= r.mac_address
-    encode=encode_rsa(code_arg,r.mac_address)
-    
+@app.put('/register/{code_id}')
+async def update(code:CodeIn,code_id=int):
+    code_arg = code.expired
+    code_arg+= code.mac_address
+    encode=encode_rsa(code_arg,code.mac_address)
     query=notes.update().where(notes.c.id==code_id).values(
-        user=r.user,
-        expired=r.expired,
+        user=code.user,
+        expired=code.expired,
         code=encode,
-        mac_address=r.mac_address
+        mac_address=code.mac_address
     )
   
     record_id= await database.execute(query)
@@ -134,7 +130,6 @@ async def update(code:Code,code_id:int ,r: CodeIn=Depends()):
     return {
         "code":"ok",
         "message":"success",
-        "id":code_id,
         "expired":code.expired,
         "mac_address":code.mac_address
     }
@@ -241,8 +236,3 @@ def form_post(request: Request):
     
     return templates.TemplateResponse('/item.html', context={'request': request, 'result': result})
 
-@app.get('/test', response_class=HTMLResponse)
-def form_post(request: Request):
-    result = 'Type a number'
-    
-    return templates.TemplateResponse('/item.html', context={'request': request, 'result': result})

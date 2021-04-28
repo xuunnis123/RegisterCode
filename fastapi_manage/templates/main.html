@@ -60,13 +60,12 @@
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.green.button").click(function () {
-        num = this.id;
-        input = document.getElementById("saved_text_" + num).innerHTML;
-        console.log(input);
+        num=this.id;
+    
         $.ajax({
-          url: "/register/" + num,
-          type: "PUT",
-          data: JSON.stringify({ item: input, item_status: true }),
+          url: "/download/" + num,
+          type: "get",
+          data: JSON.stringify({ "code_id": num}),
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.red.button").click(function () {
@@ -102,7 +101,7 @@
             <i class="trash icon"></i>
             Delete
           </button>
-          <button class="mini ui green button" id="{{item['id']}}">
+          <button class="mini ui green button" id="{{item['id']}}" value="{{item['code']}}">
             <i class="bi bi-cloud-arrow-down"></i>
             Download
           </button>
@@ -118,7 +117,7 @@
     </div>
    
     <div class="ui tiny modal" id="add">
-      <div class="header">New Task</div>
+      <div class="header">New Code</div>
       <div class="content">
         <div class="ui fluid icon input">
           <input type="text" placeholder="New user....." id="input_user" />

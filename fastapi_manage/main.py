@@ -148,6 +148,17 @@ async def delete(code_id:int):
         "code":"ok",
         "Message":"Deleted Code "+ str(code_id)
     }
+
+@app.get("/download/{code_id}")
+async def download(code_id:int):
+    query=notes.select().where(notes.c.id==code_id)
+    print(query)
+    uni_item=await database.fetch_one(query)
+    generate_licensefile(uni_item.code)
+    return {
+        "code":"ok",
+        "Message":"Downloaded"
+    }
 ######
 @app.get("/code")
 def get_posts():

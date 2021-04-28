@@ -30,7 +30,10 @@
           type: "POST",
           //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
           data: JSON.stringify({ "user": user,"expired":expired, "mac_address":mac_address }),
-
+          success: function () { 
+          alert("Success ADD!")  //請求成功後執行的操作
+           window.location.reload()  //重新整理頁面
+        }  
     }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.primary.button").click(function () {

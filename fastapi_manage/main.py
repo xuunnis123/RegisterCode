@@ -107,9 +107,6 @@ async def get_one(request:Request,code_id:int):
         "mac_address":uni_item['mac_address']
     }
 
-@app.get('/update/{code_id}',response_model=Code)
-def jump_to_update(request:Request,code_id:int,row:list):
-    return  templates.TemplateResponse('code_update.html',{"request":request,"code_id":code_id,"row":uni_item})
 
 @app.put('/register/{code_id}')
 async def update(code:CodeIn,code_id=int):
@@ -134,10 +131,6 @@ async def update(code:CodeIn,code_id=int):
         "mac_address":code.mac_address
     }
 
-@app.get("/delete/{code_id}")
-def jump_to_confirm_delete(request:Request,code_id:int):
-    print("jump_to_confirm_delete")
-    return  templates.TemplateResponse('code_confirm_delete.html',{"request":request,"code_id":code_id})
 
 @app.delete("/register/{code_id}")
 async def delete(code_id:int):
@@ -159,91 +152,3 @@ async def download(code_id:int):
         "code":"ok",
         "Message":"Downloaded"
     }
-######
-@app.get("/code")
-def get_posts():
-    return codedb
-# ADD
-@app.post("/code")
-def add_post(code: Code):
-    code_arg = code.expired
-    code_arg+= code.mac_address
-    encode=encode_rsa(code_arg,code.mac_address)
-    code.code=encode
-    #generate_licensefile(encode)
-    codedb.append(code.dict())
-    return codedb[-1]
-
-@app.get("/code/{code_id}")
-def get_post(code_id: int):
-    code = code_id - 1
-    return codedb[code]
-
-@app.get("/items/{id}", response_class=HTMLResponse)
-async def read_item(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id})
-
-# Update
-@app.post("/code/{code_id}")
-def update_post(code_id: int, code: Code):
-    
-    code.user=codedb[code_id]['user']
-    date= code.expired
-    machine_code= code.mac_address
-
-    code_arg = date
-    code_arg+= machine_code
-    encode=encode_rsa(code_arg,code.mac_address)
-    code.code=encode
-    #generate_licensefile(encode)
-    code.mac_address=codedb[code_id]['mac_address']
-    codedb[code_id] = code
-    
-    return {"message": "Code has been updated succesfully"}
-
-
-# Delete
-@app.delete("/code/{code_id}")
-def delete_post(code_id: int):
-    codedb.pop(code_id-1)
-    return {"message": "Post has been deleted succesfully"}
-
-
-
-@app.get("/items/")
-async def read_items():
-    html_content = """
-    <html>
-        <head>
-            <title>Some HTML in here</title>
-        </head>
-        <body>
-            <h1>Look ma! HTML!</h1>
-        </body>
-    </html>
-    """
-    return HTMLResponse(content=html_content, status_code=200)
-
-@app.get("/legacy/")
-def get_legacy_data():
-    data = """<?xml version="1.0"?>
-    <shampoo>
-    <Header>
-        Apply shampoo here.
-    </Header>
-    <Body>
-        You'll have to use soap here.
-    </Body>
-    </shampoo>
-    """
-    return Response(content=data, media_type="application/xml")
-
-
-
-
-@app.get('/download')
-def form_post(request: Request):
-    result = 'Type a number'
-    
-    return templates.TemplateResponse('/item.html', context={'request': request, 'result': result})
-

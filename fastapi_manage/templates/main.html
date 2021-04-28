@@ -52,7 +52,7 @@
         expired = $("#edit_expired").val();
         mac_address=$("#edit_mac_address").val();
         console.log(user);
-        alert(user);
+        
         $.ajax({
           url: "/register/" + num,
           type: "PUT",
@@ -61,7 +61,7 @@
       });
       $(".mini.ui.green.button").click(function () {
         num=this.id;
-    
+        alert("downloading..")
         $.ajax({
           url: "/download/" + num,
           type: "get",

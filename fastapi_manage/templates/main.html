@@ -57,6 +57,10 @@
           url: "/register/" + num,
           type: "PUT",
           data: JSON.stringify({ "user": user,"expired":expired, "mac_address":mac_address }),
+          success: function () { 
+          alert("Success Edit!")  //請求成功後執行的操作
+           window.location.reload()  //重新整理頁面
+        }
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.green.button").click(function () {
@@ -66,6 +70,7 @@
           url: "/download/" + num,
           type: "get",
           data: JSON.stringify({ "code_id": num}),
+          
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       $(".mini.ui.red.button").click(function () {

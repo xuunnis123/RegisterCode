@@ -11,3 +11,4 @@ testRSA.py
 *.sqlite3-journal
 *.db
 fastapi_manage/test.db
+fastapi_manage/test.db

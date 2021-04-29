@@ -1,6 +1,6 @@
 # app.py
 from fastapi import FastAPI,Response,Request,Form,Depends,BackgroundTasks
-from fastapi.responses import HTMLResponse,RedirectResponse
+from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse
 from pydantic import BaseModel,Field
 from typing import Optional, Text,List
 from datetime import datetime
@@ -67,10 +67,11 @@ async def main(request: Request):
 
 @app.post('/register')
 async def create(code:CodeIn):
-
-    code_arg = code.expired
+    
+  
+    code_arg = code.expired + "_"
     code_arg+= code.mac_address
-    encode=encode_rsa(code_arg,code.mac_address)
+    encode=encode_rsa(code_arg)
     #code.code=encode
     query=notes.insert().values(
         user=code.user,
@@ -110,9 +111,9 @@ async def get_one(request:Request,code_id:int):
 
 @app.put('/register/{code_id}')
 async def update(code:CodeIn,code_id=int):
-    code_arg = code.expired
+    code_arg = code.expired + "_"
     code_arg+= code.mac_address
-    encode=encode_rsa(code_arg,code.mac_address)
+    encode=encode_rsa(code_arg)
     query=notes.update().where(notes.c.id==code_id).values(
         user=code.user,
         expired=code.expired,
@@ -148,7 +149,5 @@ async def download(code_id:int):
     print(query)
     uni_item=await database.fetch_one(query)
     generate_licensefile(uni_item.code)
-    return {
-        "code":"ok",
-        "Message":"Downloaded"
-    }
+    return FileResponse("licensefile.skm")
+

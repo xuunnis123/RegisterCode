@@ -48,33 +48,37 @@ def decode_rsa(encode):
     
     encode = encode.encode("UTF-8")
     encode = base64.b64decode(encode)
-
-    print(encode)
-    save=encode.split(b"_")
-    print("save=",save)
-    b_expired=encode.split(b"_")[0]
-    b_mac_address=encode.split(b"_")[1]
-    b_signature=encode.split(b"_")[2:]
     
-    print("b_signature=",b_signature)
-    print("b_signature_type=",type(b_signature))
+    save=encode.split(b"_")
+    
+    b_expired=save[0]
+    b_mac_address=save[1]
+    b_save=save[2:]
+    b_signature=b''
+    
+    count=0
+    for _ in b_save:
+        if count>0:
+            b_signature+=b'_'+_
+        else: 
+            b_signature+=_
+            count+=1
+    
+    
     expired = b_expired.decode("UTF-8")
     mac_address=b_mac_address.decode("UTF-8")
-    print("macB=",type(b_mac_address))
-    signature=b_signature.decode("UTF-8")
+    
     content=expired+"_"+mac_address
     message_verify=b_expired+b"_"+b_mac_address
-    print(expired)
-    print(mac_address)
+    
    
     rsakey = RSA.importKey(open("public.pem").read())
     verifier = Signature_pkcs1_v1_5.new(rsakey)
     hsmsg = SHA.new()
     hsmsg.update(message_verify)
-    print(hsmsg)
-    print(b_signature)
     
-    is_verify = verifier.verify(hsmsg, signature)
+    
+    is_verify = verifier.verify(hsmsg, b_signature)
     
     print("is_verify:",is_verify)
     if is_verify is True:
@@ -105,11 +109,9 @@ def execute():
     if os.path.isfile(filepath) is False:
         return "Do not Exist File."
     record_code = check_authfile()
-    print(record_code)
-    print("----")
+    
     record_code = decode_rsa(record_code)
-    print("++++")
-    print(record_code)
+    
     result = check_key(record_code)
     if result is True:
         flag = True

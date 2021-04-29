@@ -20,7 +20,7 @@ def gen_private_public():
     # 將 RSA 金鑰寫入檔案
     with open("private.pem", "wb") as file_content:
         file_content.write(encrypted_key)
-    public_key=key.publickey().exportKey()
+    
     with open("public.pem", "wb") as file_content:
         file_content.write(public_key)
 

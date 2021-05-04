@@ -102,14 +102,13 @@
         $.ajax({
           url: "/filter/" + q,
           type: "GET",
-          
         }).then(setTimeout(location.reload.bind(location), 200));
       });
     });
   </script>
     
 <div class="ui raised very padded text container segment">
-    <h1 style="text-align: center;">Code LIST</h1>
+    <h1 style="text-align: center;">Code Filter LIST</h1>
     <button class="ui primary button" id="add_button">
       <i class="plus icon"></i>
       Add
@@ -137,14 +136,8 @@
   </div>
     <hr />
     <div class="ui middle aligned divided list">
-      <div>
-      {% for it in filter_item %}
-      <p>Filter_item:</p>
-      <p>{{ it['user'] }}</p>
-      {% endfor %}
-    </div>
-      <hr />
-      {% for item in all_item%}
+      
+      {% for item in filter_item%}
       <div class="item">
         <div class="right floated content">
           <button class="mini ui primary button" id="{{item['id']}}">

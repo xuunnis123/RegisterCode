@@ -60,6 +60,7 @@ async def shutdown():
 @app.get("/")
 async def main(request: Request):
     print("main")
+    #.where(user==q)
     query = notes.select()
     all_item=await database.fetch_all(query)
     return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
@@ -153,7 +154,6 @@ async def download(code_id:int):
 
 @app.get("/filter/{q}")
 async def index(req:Request,q:str):
-    print("index")
     
     #codes = Code.objects.all()
     print(req.query_params)
@@ -164,7 +164,9 @@ async def index(req:Request,q:str):
     #query = notes.select(sqlalchemy.text('*')).where(user==q)
     query = notes.select().where(user==q)
     print(query)
-    filter_item=await database.fetch_all(query)
-    print(len(filter_item))
-    print(filter_item[0])
-    return templates.TemplateResponse("main.html", {"request": req,"filter_item":filter_item})
+    all_item=await database.fetch_all(query)
+    
+    return {
+        "code":"ok",
+        "filter_item":all_item
+    }

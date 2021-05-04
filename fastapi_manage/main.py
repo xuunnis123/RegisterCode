@@ -151,3 +151,23 @@ async def download(code_id:int):
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
 
+@app.get("/filter/{q}")
+async def index(req:Request,q:str):
+    print("index")
+    
+    #codes = Code.objects.all()
+    print(req.query_params)
+    print("q:",q)
+    if "filter[filter]" in req.query_params:
+        print("yes")
+
+        return req.query_params["filter[filter]"]
+
+    print("index")
+    '''
+    query  = request.GET.get('q')
+    if query:
+        codes = Code.objects.filter(Q(title__icontains=query)).distinct()
+    return templates.TemplateResponse("main.html", {"request": request,"codes":codes})
+    '''
+    return ""

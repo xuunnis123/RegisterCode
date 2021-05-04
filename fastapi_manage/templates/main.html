@@ -93,7 +93,17 @@
           type: "DELETE",
         }).then(setTimeout(location.reload.bind(location), 200));
       });
-     
+      $("#submit_search").click(function () {
+        
+        q=$("#search_bar").val();
+        //q = document.getElementById("search_bar").innerHTML;
+        
+        alert(q);
+        $.ajax({
+          url: "/filter/" + q,
+          type: "GET",
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
     });
   </script>
     
@@ -106,13 +116,24 @@
     
     
     <h2 class="ui header">Code Management</h2>
-    <div class="ui category search">
-        <div class="ui icon input">
-          <input class="prompt" type="text" placeholder="Search animals...">
-          <i class="search icon"></i>
-        </div>
-        <div class="results"></div>
-    </div>
+
+    <div class="container">
+      <div class="col-xs-6 col-xs-offset-3">
+        
+           
+           <div class="input-group">	
+              <input type="text" class="form-control input-lg " id="search_bar" name="q" placeholder= "Search Code "/>
+              <span class='input-group-btn'>
+  
+               <button id="submit_search" class='btn btn-info btn-lg'>Search
+               </button>
+           </span>
+          </div>
+    
+     
+  
+   </div>
+  </div>
     <hr />
     <div class="ui middle aligned divided list">
       {% for item in all_item%}

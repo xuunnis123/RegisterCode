@@ -158,16 +158,13 @@ async def index(req:Request,q:str):
     #codes = Code.objects.all()
     print(req.query_params)
     print("q:",q)
-    if "filter[filter]" in req.query_params:
-        print("yes")
-
-        return req.query_params["filter[filter]"]
-
-    print("index")
-    '''
-    query  = request.GET.get('q')
-    if query:
-        codes = Code.objects.filter(Q(title__icontains=query)).distinct()
-    return templates.TemplateResponse("main.html", {"request": request,"codes":codes})
-    '''
-    return ""
+    
+    user= sqlalchemy.sql.column('user')
+    print(user)
+    #query = notes.select(sqlalchemy.text('*')).where(user==q)
+    query = notes.select().where(user==q)
+    print(query)
+    filter_item=await database.fetch_all(query)
+    print(len(filter_item))
+    print(filter_item[0])
+    return templates.TemplateResponse("main.html", {"request": req,"filter_item":filter_item})

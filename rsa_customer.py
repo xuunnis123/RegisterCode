@@ -34,11 +34,14 @@ def check_key(en_code):
             if code >= today:
                 return True
             else:
-                return "EXPIRED CODE"
+                raise ValueError("EXPIRED CODE")
+
         else:
-            return "Error: On Different Device."
+            raise ValueError("Error: On Different Device.")
+            
     else:
-        return "MISSING CODE"
+        raise ValueError("MISSING CODE")
+        
 
 
 def decode_rsa(encode):
@@ -50,7 +53,7 @@ def decode_rsa(encode):
     encode = base64.b64decode(encode)
 
     save = encode.split(b"_")
-
+    
     b_expired = save[0]
     b_mac_address = save[1]
     b_save = save[2:]
@@ -70,7 +73,6 @@ def decode_rsa(encode):
 
     content = expired + "_" + mac_address
     message_verify = b_expired + b"_" + b_mac_address
-
     rsakey = RSA.importKey(open("public.pem").read())
     verifier = Signature_pkcs1_v1_5.new(rsakey)
     hsmsg = SHA.new()
@@ -78,13 +80,9 @@ def decode_rsa(encode):
 
     is_verify = verifier.verify(hsmsg, b_signature)
 
-    print("is_verify:", is_verify)
-    if is_verify is True:
-        print("is_verify:", content)
-        return content
-    else:
-        return is_verify
-
+    if is_verify is not True:
+        raise ValueError
+    return content
 
 def check_authfile():
     """
@@ -92,34 +90,31 @@ def check_authfile():
     """
     with open('licensefile.skm', 'r') as file_content:
         save = file_content.read()
-        if save != '':
-            return save
-        else:
-            return "Error Code."
+        if save == '':
+            raise ValueError
+        return save
 
-
-def execute():
+def check_license():
     """
     Execute this app
     """
-    flag = False
     filepath = os.getcwd()+"/licensefile.skm"
-    if os.path.isfile(filepath) is False:
-        return "Do not Exist File."
-    record_code = check_authfile()
-    record_code = decode_rsa(record_code)
-    result = check_key(record_code)
-    if result is True:
-        flag = True
-    else:
-        print(result)
-        print("execute again")
-    return flag
+    try:
+            if os.path.isfile(filepath) is False:
+                raise FileNotFoundError()
+        
+            record_code = check_authfile()
+            record_code = decode_rsa(record_code)
+            result = check_key(record_code)
+        except:
+            return False
+        if result is True:
+            return True
 
 
 if __name__ == '__main__':
 
-    if execute() is True:
+    if check_license() is True:
         print("Continue")
     else:
         print("Cannot Validate!!")

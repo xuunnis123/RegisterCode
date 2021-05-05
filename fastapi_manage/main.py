@@ -58,12 +58,20 @@ async def connect():
 async def shutdown():
     await database.disconnect()
 
+@app.get("/{q}")
 @app.get("/")
-async def main(request: Request):
+async def main(request: Request,q:str=None):
     print("main")
     #.where(user==q)
-    query = notes.select()
+    if q is not None:
+        user= sqlalchemy.sql.column('user')
+        print(user)
+        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+        query = notes.select().where(user==q)
+    else:
+        query = notes.select()
     all_item=await database.fetch_all(query)
+    print(all_item[0].user)
     return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
 
 
@@ -153,30 +161,4 @@ async def download(code_id:int):
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
 
-@app.get("/filter/{q}")
-async def index(req:Request,q:str):
-    
-    #codes = Code.objects.all()
-    print(req.query_params)
-    print("q:",q)
-    
-    user= sqlalchemy.sql.column('user')
-    print(user)
-    #query = notes.select(sqlalchemy.text('*')).where(user==q)
-    query = notes.select().where(user==q)
-    print(query)
-    all_item=await database.fetch_all(query)
-    print(len(all_item))
-    print(type(all_item))
-    x={}
-    for i in range(len(all_item)):
-        x['user']=all_item[i].user
-        x['code']=all_item[i].code
-        x['expired']=all_item[i].expired
-        x['mac_address']=all_item[i].mac_address
-        print(x)
-        all_item_json=json.dumps(x)
-        print(all_item_json)
-    #SUCCESS
-    #return Response(content=all_item[0].user)
-    return JSONResponse(content=all_item_json)  
+

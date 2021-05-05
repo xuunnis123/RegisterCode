@@ -99,16 +99,13 @@
         q=$("#search_bar").val();
         //q = document.getElementById("search_bar").innerHTML;
         
-        alert(q);
         $.ajax({
-          url: "/filter/" + q,
+          url: (q==null)?"/":"/" + q,
           type: "GET",
           success: function (filter_item) { 
-          alert("Success Filter!")  //請求成功後執行的操作
-          alert(filter_item)  //重新整理頁面
-          $(".filter_item").text(filter_item)  
+          window.location.href=(q==null)?"/":"/" + q;
         }
-        }).then(setTimeout(location.reload.bind(location), 200));
+        });
       });
     });
   </script>
@@ -128,7 +125,7 @@
         
            
            <div class="input-group">	
-              <input type="text" class="form-control input-lg " id="search_bar" name="q" placeholder= "Search Code "/>
+              <input type="text" class="form-control input-lg " id="search_bar" name="q" placeholder= "Search Client "/>
               <span class='input-group-btn'>
   
                <button id="submit_search" class='btn btn-info btn-lg'>Search
@@ -141,28 +138,7 @@
    </div>
   </div>
   <div class="ui middle aligned divided list">
-    <div>
-    <span class="filter_item"></span>
-    <p>Filter_item:</p>
-    <table style="border-spacing: 50px 20px;" id="table">
-      <thead>
-      <tr>
-      <th>Client</th>				
-      <th>Code</th>
-      <th>Expired</th>
-      <th>MAC Address</th>
-    
-      </tr>
-      </thead>
-      <tbody>
-      
-    {% for it in filter_item %}
-    {{filter_item}}
-    <tr>{{ it['user'] }}</tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </div>
+  
     <hr />
    
       {% for item in all_item%}

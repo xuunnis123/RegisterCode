@@ -58,11 +58,13 @@ async def connect():
 async def shutdown():
     await database.disconnect()
 
-@app.get("/{q}")
+@app.get("/client/{q}")
 @app.get("/")
 async def main(request: Request,q:str=None):
     print("main")
     #.where(user==q)
+    print("q=",q)
+
     if q is not None:
         user= sqlalchemy.sql.column('user')
         print(user)
@@ -71,9 +73,26 @@ async def main(request: Request,q:str=None):
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
-    print(all_item[0].user)
+    
     return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
 
+@app.get("/mac/{mac}")
+async def main(request: Request,mac:str=None):
+    print("main")
+    #.where(user==q)
+
+    print("mac=",mac)
+  
+    if mac is not None:
+        mac_address= sqlalchemy.sql.column('mac_address')
+        print(mac_address)
+        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+        query = notes.select().where(mac_address==mac)
+    else:
+        query = notes.select()
+    all_item=await database.fetch_all(query)
+    
+    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
 
 @app.post('/register')
 async def create(code:CodeIn):

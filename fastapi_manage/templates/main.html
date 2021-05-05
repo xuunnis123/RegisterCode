@@ -94,16 +94,44 @@
           type: "DELETE",
         }).then(setTimeout(location.reload.bind(location), 200));
       });
-      $("#submit_search").click(function () {
+      $("#client_search_button").click(function () {
         
         q=$("#search_bar").val();
+      
         //q = document.getElementById("search_bar").innerHTML;
         
         $.ajax({
-          url: (q==null)?"/":"/" + q,
+          url: ((q==null)?"/":"/client/" + q),
           type: "GET",
           success: function (filter_item) { 
-          window.location.href=(q==null)?"/":"/" + q;
+          window.location.href=((q==null)?"/":"/client/" + q);
+        }
+        });
+      });
+      $("#mac_search_button").click(function () {
+        
+        mac=$("#mac_search").val();
+        
+        //q = document.getElementById("search_bar").innerHTML;
+        
+        $.ajax({
+          url: ((mac==null)?"/":"/mac/" + mac),
+          type: "GET",
+          success: function (filter_item) { 
+          window.location.href=((mac==null)?"/":"/mac/" + mac);
+        }
+        });
+      });
+      $("#cancel_button").click(function () {
+        
+        $("#mac_search").val("");
+        $("#search_bar").val("");
+        //q = document.getElementById("search_bar").innerHTML;
+        $.ajax({
+          url: "/",
+          type: "GET",
+          success: function (filter_item) { 
+          window.location.href="/";
         }
         });
       });
@@ -121,21 +149,21 @@
     <h2 class="ui header">Code Management</h2>
 
     <div class="container">
-      <div class="col-xs-6 col-xs-offset-3">
+      
+      <div class="ui action input">
+        <input type="text" id="search_bar" name="q" placeholder="Search Client...">
+        <button class="ui blue button" id="client_search_button">Search</button>
+        <input type="text" id="mac_search" name="mac" placeholder="Search MAC address...">
+        <button class="ui blue button" id="mac_search_button">Search</button>
+      </div>
+      <br>
+      <div class="ui action input">
+        <input type="text" id="expired_search" name="mac" placeholder="Search Expired Time...">
+        <button class="ui blue button" id="expired_search_button">Search</button>
+      </div>
+    <br>
+      <button class="ui grey button" id="cancel_button">Cancel</button>
         
-           
-           <div class="input-group">	
-              <input type="text" class="form-control input-lg " id="search_bar" name="q" placeholder= "Search Client "/>
-              <span class='input-group-btn'>
-  
-               <button id="submit_search" class='btn btn-info btn-lg'>Search
-               </button>
-           </span>
-          </div>
-    
-     
-  
-   </div>
   </div>
   <div class="ui middle aligned divided list">
   

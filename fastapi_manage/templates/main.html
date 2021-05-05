@@ -23,6 +23,7 @@
     $(document).ready(function () {
       var num;
       var input;
+      var filter_item=[];
       $("#add_button").click(function () {
         $("#add").modal("show");
       });
@@ -102,7 +103,11 @@
         $.ajax({
           url: "/filter/" + q,
           type: "GET",
-          
+          success: function (filter_item) { 
+          alert("Success Filter!")  //請求成功後執行的操作
+          alert(filter_item)  //重新整理頁面
+          $(".filter_item").text(filter_item)  
+        }
         }).then(setTimeout(location.reload.bind(location), 200));
       });
     });
@@ -135,15 +140,31 @@
   
    </div>
   </div>
+  <div class="ui middle aligned divided list">
+    <div>
+    <span class="filter_item"></span>
+    <p>Filter_item:</p>
+    <table style="border-spacing: 50px 20px;" id="table">
+      <thead>
+      <tr>
+      <th>Client</th>				
+      <th>Code</th>
+      <th>Expired</th>
+      <th>MAC Address</th>
+    
+      </tr>
+      </thead>
+      <tbody>
+      
+    {% for it in filter_item %}
+    {{filter_item}}
+    <tr>{{ it['user'] }}</tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
     <hr />
-    <div class="ui middle aligned divided list">
-      <div>
-      {% for it in filter_item %}
-      <p>Filter_item:</p>
-      <p>{{ it['user'] }}</p>
-      {% endfor %}
-    </div>
-      <hr />
+   
       {% for item in all_item%}
       <div class="item">
         <div class="right floated content">

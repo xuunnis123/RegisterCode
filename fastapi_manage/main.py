@@ -1,6 +1,6 @@
 # app.py
 from fastapi import FastAPI,Response,Request,Form,Depends,BackgroundTasks
-from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse
+from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse,JSONResponse
 from pydantic import BaseModel,Field
 from typing import Optional, Text,List
 from datetime import datetime
@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 import sqlalchemy
 import databases
 import starlette.status as status
+import json
 DATABASE_URL = "sqlite:///./test.db"
 
 metadata = sqlalchemy.MetaData()
@@ -165,8 +166,17 @@ async def index(req:Request,q:str):
     query = notes.select().where(user==q)
     print(query)
     all_item=await database.fetch_all(query)
-    
-    return {
-        "code":"ok",
-        "filter_item":all_item
-    }
+    print(len(all_item))
+    print(type(all_item))
+    x={}
+    for i in range(len(all_item)):
+        x['user']=all_item[i].user
+        x['code']=all_item[i].code
+        x['expired']=all_item[i].expired
+        x['mac_address']=all_item[i].mac_address
+        print(x)
+        all_item_json=json.dumps(x)
+        print(all_item_json)
+    #SUCCESS
+    #return Response(content=all_item[0].user)
+    return JSONResponse(content=all_item_json)  

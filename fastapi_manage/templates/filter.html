@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>CODE APP</title>
+        <title>CODE Filter APP</title>
         
         <link
           rel="stylesheet"
@@ -101,7 +101,7 @@
         alert(q);
         $.ajax({
           url: "/filter/" + q,
-          type: "GET",
+          type: "POST",
         }).then(setTimeout(location.reload.bind(location), 200));
       });
     });
@@ -137,7 +137,7 @@
     <hr />
     <div class="ui middle aligned divided list">
       
-      {% for item in filter_item%}
+      {% for item in all_item%}
       <div class="item">
         <div class="right floated content">
           <button class="mini ui primary button" id="{{item['id']}}">

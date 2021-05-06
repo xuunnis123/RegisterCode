@@ -197,7 +197,9 @@
     　if(document.getElementById('edit_client_'+id).disabled===false){
         alert("enable");
       　document.getElementById('edit_client_'+id).disabled=true;
-        document.getElementByName('save_'+id).style.display = 'none';
+      document.getElementById('edit_expired_'+id).disabled=true;
+      document.getElementById('edit_mac_address_'+id).disabled=true;
+      document.getElementById('save_'+id).style.display = 'block';
         document.getElementById("edit_btn_"+id).style.display='block';
 
     　}else{
@@ -212,12 +214,15 @@
     function update_code(id){
       alert("update");
       alert(id);
+      document.getElementById('save_'+id).style.display = 'none';
+      document.getElementById("edit_btn_"+id).style.display='block';
+      document.getElementById('edit_client_'+id).disabled=true;
+      document.getElementById('edit_expired_'+id).disabled=true;
+      document.getElementById('edit_mac_address_'+id).disabled=true;
       client = $("#edit_client_"+id).val();
         expired = $("#edit_expired_"+id).val();
         mac_address=$("#edit_mac_address_"+id).val();
-        alert(client);
-        alert(expired);
-        alert(mac_address);
+       
         $.ajax({
           url: "/register/" + id,
           type: "PUT",

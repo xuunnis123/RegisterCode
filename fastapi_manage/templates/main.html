@@ -1,23 +1,17 @@
 <html>
     <head>
         <title>CODE APP</title>
-        
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-        />
+      
         <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-        <script
-          src="https://code.jquery.com/jquery-3.1.1.min.js"
-          integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-          crossorigin="anonymous"
-        ></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+      
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+  
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+
 
     </head>
 <body>
@@ -26,32 +20,40 @@
       var num;
       var input;
       var filter_item=[];
+      /*
       $("#add_button").click(function () {
         $("#add").modal("show");
       });
+    */
+ 
       $("#start_datepicker").datepicker();
       $("#end_datepicker").datepicker();
       $("#expired_datepicker").datepicker();
-      
+      $("#input_expired_datepicker").datepicker();
       $("#save_button").click(function () {
         client = $("#input_client").val();
-        expired = $("#input_expired").val();
+        expired = $("#input_expired_datepicker").val();
         mac_address=$("#input_mac_address").val();
         console.log(client);
+        console.log(expired);
+        console.log(mac_address);
+        expired_buffer = expired.split("/");
+        expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
         $.ajax({
           url: "/register",
           type: "POST",
           //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
-          data: JSON.stringify({ "user": client,"expired":expired, "mac_address":mac_address }),
+          data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":mac_address }),
           success: function () { 
           alert("Success ADD!")  //請求成功後執行的操作
-           window.location.reload()  //重新整理頁面
+          //window.location.href="/"; //重新整理頁面
         }  
     }).then(setTimeout(location.reload.bind(location), 200));
       }
       
       );
-      $(".mini.ui.primary.button").click(function () {
+      /*
+      $(".btn-primary").click(function () {
         num = this.id;
         console.log(num);
         $.ajax({
@@ -64,6 +66,7 @@
           $("#update").modal("show");
         });
       });
+      */
       $("#edit_save_button").click(function () {
         
         client = $("#edit_client").val();
@@ -82,7 +85,7 @@
         }).then(setTimeout(location.reload.bind(location), 200));
       });
       
-      $(".mini.ui.green.button").click(function () {
+      $(".btn-secondary").click(function () {
         num=this.id;
         alert("Start to Download !")
         $.ajax({
@@ -92,7 +95,7 @@
           
         }).then(setTimeout(location.reload.bind(location), 200));
       });
-      $(".mini.ui.red.button").click(function () {
+      $(".btn-danger").click(function () {
         num = this.id;
         input = document.getElementById("saved_text_" + num).innerHTML;
         console.log(input);
@@ -177,80 +180,129 @@
       });
        
     });
+    function show_hide(){
+      var x = document.getElementById("add_section");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
   </script>
     
 <div class="ui raised very padded text container segment">
-    <h1 style="text-align: center;">Code LIST</h1>
-    <button class="ui primary button" id="add_button">
-      <i class="plus icon"></i>
+    <h1 class="display-4" style="text-align: center;">Code LIST</h1>
+    <button type="button" class="btn btn-primary" id="add_button" onclick="show_hide()">
       Add
     </button>
+    <div id="add_section" style="display:none" class="input-group mb-3">
+      <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="input-group-text"/></span>
+       
+      <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="input-group-text"/></span>
+           
+      <span class="input-group-text" id="inputGroup-sizing-default">MAC Address <input type="text" placeholder="New MAC Address....." id="input_mac_address" class="input-group-text"/></span>
+       
+      
+      <button type="button"  id="save_button" class="btn btn-outline-success">Save</button>
+    </div>
     
-    
-    <h2 class="ui header">Code Management</h2>
+    <h2 class="display-4">Code Management</h2>
 
     <div class="container">
       
-      <div class="ui action input">
-        <input type="text" id="search_bar" name="q" placeholder="Search Client...">
-        <button class="ui blue button" id="client_search_button">Search</button>
-        <input type="text" id="mac_search" name="mac" placeholder="Search MAC address...">
-        <button class="ui blue button" id="mac_search_button">Search</button>
+      <div class="input-group mb-3">
+        <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client...">
+        <button class="btn btn-primary" id="client_search_button">Search</button>
+        <input type="text" id="mac_search" name="mac" class="form-control" placeholder="Search MAC address...">
+        <button class="btn btn-primary" id="mac_search_button">Search</button>
       </div>
-      <div class="ui action input">
+      <div class="input-group mb-3">
         <p>Start </p><br/>
-        <input type="text" id="start_datepicker">
+        <input type="text" id="start_datepicker" class="form-control">
         <p>End</p> <br/>
-        <input type="text" id="end_datepicker">
-        <button class="ui blue button" id="date_search_button">Search</button>
+        <input type="text" id="end_datepicker" class="form-control">
+        <button id="date_search_button" class="btn btn-primary">Search</button>
       </div>
       <br>
       
     <br/>
-      <button class="ui grey button" id="cancel_button">Cancel</button>
+      <button class="btn btn-warning" id="cancel_button">Cancel</button>
       
   </div>
-  <div class="ui middle aligned divided list">
+  <div class="card">
   
-    <hr />
+ 
    
       {% for item in all_item%}
-      <div class="item">
-        <div class="right floated content">
-          <button class="mini ui primary button" id="{{item['id']}}">
-            <i class="pencil alternate icon"></i>
+      <table class="table table-striped">
+    
+        <tr class="table-light">
+          <td class="table-light" id="saved_text_{{item['id']}}">Client:{{item['user']}}</td>
+          <td class="table-light">Expired:{{item['expired']}}</td>
+          <td class="table-light">MAC_ADDRESS:{{item['mac_address']}}</td>
+          <td><button class="btn btn-primary" id="{{item['id']}}"> 
             Edit
           </button>
-          
-          <button class="mini ui red button" id="{{item['id']}}">
-            <i class="trash icon"></i>
+        
+          <button class="btn btn-danger" id="{{item['id']}}">
+            
             Delete
           </button>
           
-          <a href="/download/{{item['id']}}" class="mini ui green button" id="{{item['id']}}" download="licensefile.skm">
-            <i class="bi bi-cloud-arrow-down"></i>
+          <a href="/download/{{item['id']}}" class="btn btn-secondary" id="{{item['id']}}" download="licensefile.skm">
+            
             Download
           </a>
-        </div>
+          </td>
+        </tr>
         
-        <div class="content">
-          <p id="saved_text_{{item['id']}}">Client:{{item['user']}}</p>
-          <p>Expired:{{item['expired']}}</p>
-          <p>MAC_ADDRESS:{{item['mac_address']}}</p>
+        
+      </table>
+      {% endfor %}
+     
+  </div>
+
+    <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">New Code</h5>
+            
+          </div>
+          <div class="modal-body">
+            <input type="text" placeholder="New Client....." id="input_client" />
+            
+            <input type="text" id="expired_datepicker">
+            <input type="text" placeholder="MAC Address....." id="input_mac_address" />
+          </div>
+          <div class="modal-footer">
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="modal" id="update">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Code</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" placeholder="New Client....." id="edit_client" />
+          <input type="text" id="edit_expired">
+          <input type="text" placeholder="MAC Address....." id="edit_mac_address" />
+        </div>
+        <div class="actions">
+          <button type="button"  id="edit_save_button" class="btn btn-secondary" data-bs-dismiss="modal">Save</button>
         </div>
         
       </div>
-      {% endfor %}
-      <div aria-label="Pagination Navigation" role="navigation" class="ui pagination menu">
-          <a aria-current="false" aria-disabled="false" tabindex="0" value="1" aria-label="Previous item" type="prevItem" class="item">⟨</a>
-          <a aria-current="true" aria-disabled="false" tabindex="0" value="1" type="pageItem" class="active item">1</a>
-          <a aria-current="false" aria-disabled="false" tabindex="0" value="2" type="pageItem" class="item">2</a>
-          <a aria-current="false" aria-disabled="false" tabindex="0" value="3" type="pageItem" class="item">3</a>
-          <a aria-current="false" aria-disabled="false" tabindex="0" value="2" aria-label="Next item" type="nextItem" class="item">⟩</a>
-        </div>
     </div>
-   
-   
+  </div>
+
+   <!--
     <div class="ui tiny modal" id="add">
       <div class="header">New Code</div>
       <div class="content">
@@ -282,7 +334,8 @@
         <div class="ui approve button" id="edit_save_button">Save</div>
       </div>
     </div>
-  </div>
+  -->
+  
   </body>
 
 </html>

@@ -141,6 +141,7 @@ async def get_one(request:Request,code_id:int):
 
 @app.put('/register/{code_id}')
 async def update(code:CodeIn,code_id=int):
+    print("put")
     code_arg = code.expired + "_"
     code_arg+= code.mac_address
     encode=encode_rsa(code_arg)
@@ -152,9 +153,10 @@ async def update(code:CodeIn,code_id=int):
     )
   
     record_id= await database.execute(query)
-   
+    
     query=notes.select().where(notes.c.id == record_id)
     user=await database.fetch_one(query)
+    print("user:",user)
     return {
         "code":"ok",
         "message":"success",

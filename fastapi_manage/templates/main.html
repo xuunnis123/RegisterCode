@@ -20,6 +20,7 @@
       var num;
       var input;
       var filter_item=[];
+
       /*
       $("#add_button").click(function () {
         $("#add").modal("show");
@@ -30,6 +31,7 @@
       $("#end_datepicker").datepicker();
       $("#expired_datepicker").datepicker();
       $("#input_expired_datepicker").datepicker();
+      $("#edit_expired_datepicker").datepicker();
       $("#save_button").click(function () {
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
@@ -66,14 +68,14 @@
           $("#update").modal("show");
         });
       });
-      */
+      
       $("#edit_save_button").click(function () {
-        
         client = $("#edit_client").val();
         expired = $("#edit_expired").val();
         mac_address=$("#edit_mac_address").val();
-        console.log(client);
-        
+        alert(client);
+        alert(expired);
+        alert(mac_address);
         $.ajax({
           url: "/register/" + num,
           type: "PUT",
@@ -84,7 +86,7 @@
         }
         }).then(setTimeout(location.reload.bind(location), 200));
       });
-      
+      */
       $(".btn-secondary").click(function () {
         num=this.id;
         alert("Start to Download !")
@@ -188,6 +190,44 @@
         x.style.display = "none";
       }
     }
+    function change_disabled(id){
+      
+      alert(id);
+    
+    　if(document.getElementById('edit_client_'+id).disabled===false){
+        alert("enable");
+      　document.getElementById('edit_client_'+id).disabled=true;
+        document.getElementByName('save_'+id).style.display = 'none';
+        document.getElementById("edit_btn_"+id).style.display='block';
+
+    　}else{
+        alert("disable");
+      　document.getElementById('edit_client_'+id).disabled=false;
+      document.getElementById('edit_expired_'+id).disabled=false;
+      document.getElementById('edit_mac_address_'+id).disabled=false;
+      document.getElementById('save_'+id).style.display = 'block';
+      document.getElementById("edit_btn_"+id).style.display='none';
+    　}
+    }
+    function update_code(id){
+      alert("update");
+      alert(id);
+      client = $("#edit_client_"+id).val();
+        expired = $("#edit_expired_"+id).val();
+        mac_address=$("#edit_mac_address_"+id).val();
+        alert(client);
+        alert(expired);
+        alert(mac_address);
+        $.ajax({
+          url: "/register/" + id,
+          type: "PUT",
+          data: JSON.stringify({ "user": client,"expired":expired, "mac_address":mac_address }),
+          success: function () { 
+          alert("Success Edit!")  //請求成功後執行的操作
+           window.location.reload()  //重新整理頁面
+        }
+        }).then(setTimeout(location.reload.bind(location), 200));
+    }
   </script>
     
 <div class="ui raised very padded text container segment">
@@ -237,13 +277,18 @@
       <table class="table table-striped">
     
         <tr class="table-light">
-          <td class="table-light" id="saved_text_{{item['id']}}">Client:{{item['user']}}</td>
-          <td class="table-light">Expired:{{item['expired']}}</td>
-          <td class="table-light">MAC_ADDRESS:{{item['mac_address']}}</td>
-          <td><button class="btn btn-primary" id="{{item['id']}}"> 
+          <td class="table-light" id="saved_text_{{item['id']}}">Client<input type="text" id="edit_client_{{item['id']}}" class="input-group-text" value="{{item['user']}}" disabled=true/></td>
+          <td class="table-light">Expired<input type="text" id="edit_expired_{{item['id']}}" class="input-group-text" value="{{item['expired']}}" disabled=true/></td>
+          <td class="table-light">MAC_ADDRESS<input type="text" id="edit_mac_address_{{item['id']}}" class="input-group-text" value="{{item['mac_address']}}" disabled=true/></td>
+  
+      <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
             Edit
           </button>
-        
+          <div id="save_{{item['id']}}" style="display:none">
+          <button type="button" class="btn btn-primary" id="edit_save_button" onclick="update_code(value)" value="{{item['id']}}"> 
+            Save
+          </button>
+          </div>
           <button class="btn btn-danger" id="{{item['id']}}">
             
             Delete
@@ -302,39 +347,7 @@
     </div>
   </div>
 
-   <!--
-    <div class="ui tiny modal" id="add">
-      <div class="header">New Code</div>
-      <div class="content">
-        <div class="ui fluid icon input">
-          <input type="text" placeholder="New Client....." id="input_client" />
-          
-          <input type="text" id="expired_datepicker">
-          <input type="text" placeholder="MAC Address....." id="input_mac_address" />
-        </div>
-      </div>
-      <div class="actions">
-        <div class="ui approve button" id="save_button">Save</div>
-      </div>
-    </div>
-
-    <div class="ui tiny modal" id="update">
-      <div class="header">Update Code</div>
-      <div class="content">
-        <div class="ui fluid icon input">
-           <p>Client </p> 
-          <input type="text" id="edit_client" />
-          <p>Expired </p>
-          <input type="text" id="edit_expired" />
-          <p>MAC Address </p>
-          <input type="text" id="edit_mac_address" />
-        </div>
-      </div>
-      <div class="actions">
-        <div class="ui approve button" id="edit_save_button">Save</div>
-      </div>
-    </div>
-  -->
+  
   
   </body>
 

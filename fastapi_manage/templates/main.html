@@ -6,17 +6,19 @@
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
         />
-        
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
         <script
           src="https://code.jquery.com/jquery-3.1.1.min.js"
           integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
           crossorigin="anonymous"
         ></script>
-        
-        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
-<script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+
     </head>
 <body>
     <script>
@@ -27,6 +29,10 @@
       $("#add_button").click(function () {
         $("#add").modal("show");
       });
+      $("#start_datepicker").datepicker();
+      $("#end_datepicker").datepicker();
+      $("#expired_datepicker").datepicker();
+      
       $("#save_button").click(function () {
         client = $("#input_client").val();
         expired = $("#input_expired").val();
@@ -43,6 +49,7 @@
         }  
     }).then(setTimeout(location.reload.bind(location), 200));
       }
+      
       );
       $(".mini.ui.primary.button").click(function () {
         num = this.id;
@@ -122,6 +129,39 @@
         }
         });
       });
+       
+      $("#date_search_button").click(function () {
+        start=$("#start_datepicker").val();
+        end=$("#end_datepicker").val();
+        console.log(end.length);
+        
+        var start_buffer="";
+        var start_handle="";
+        var end_buffer="";
+        var end_handle="";
+        if (start.length != 0){
+          
+          start_buffer = start.split("/");
+          start_handle = start_buffer[2] + start_buffer[0] + start_buffer[1];
+        }
+        if (end.length != 0){
+         
+          end_buffer = end.split("/");
+          end_handle = end_buffer[2] + end_buffer[0] + end_buffer[1];
+        }
+        var date_bind="";
+        if(start_handle != null || end_handle!= null ){
+          date_bind=start_handle+"_"+end_handle;
+        }
+        
+        $.ajax({
+          url: ((date_bind.length <= 1 )?"/":"/date/" + date_bind),
+          type: "GET",
+          success: function () { 
+          window.location.href=((date_bind.length <= 1 )?"/":"/date/" + date_bind);
+        }
+        });
+      });
       $("#cancel_button").click(function () {
         
         $("#mac_search").val("");
@@ -135,6 +175,7 @@
         }
         });
       });
+       
     });
   </script>
     
@@ -156,14 +197,18 @@
         <input type="text" id="mac_search" name="mac" placeholder="Search MAC address...">
         <button class="ui blue button" id="mac_search_button">Search</button>
       </div>
-      <br>
       <div class="ui action input">
-        <input type="text" id="expired_search" name="mac" placeholder="Search Expired Time...">
-        <button class="ui blue button" id="expired_search_button">Search</button>
+        <p>Start </p><br/>
+        <input type="text" id="start_datepicker">
+        <p>End</p> <br/>
+        <input type="text" id="end_datepicker">
+        <button class="ui blue button" id="date_search_button">Search</button>
       </div>
-    <br>
+      <br>
+      
+    <br/>
       <button class="ui grey button" id="cancel_button">Cancel</button>
-        
+      
   </div>
   <div class="ui middle aligned divided list">
   
@@ -211,8 +256,8 @@
       <div class="content">
         <div class="ui fluid icon input">
           <input type="text" placeholder="New Client....." id="input_client" />
-          <input type="text" placeholder="Expired....." id="input_expired" />
           
+          <input type="text" id="expired_datepicker">
           <input type="text" placeholder="MAC Address....." id="input_mac_address" />
         </div>
       </div>
@@ -220,6 +265,7 @@
         <div class="ui approve button" id="save_button">Save</div>
       </div>
     </div>
+
     <div class="ui tiny modal" id="update">
       <div class="header">Update Code</div>
       <div class="content">

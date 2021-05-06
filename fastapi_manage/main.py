@@ -7,6 +7,7 @@ from datetime import datetime
 from rsa_company_gen import encode_rsa,generate_licensefile
 from fastapi.templating import Jinja2Templates
 import sqlalchemy
+from sqlalchemy import and_
 import databases
 import starlette.status as status
 import json
@@ -179,5 +180,48 @@ async def download(code_id:int):
     uni_item=await database.fetch_one(query)
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
+
+
+@app.get("/date/{date_bind}")
+async def main(request: Request,date_bind:str=None):
+    print("main")
+    #.where(user==q)
+
+    
+    if date_bind.find("_") == 0:
+        start = None
+        end = date_bind[1:]
+    if date_bind.find("_") == 8:
+        start = date_bind.split("_")[0]
+        if len(date_bind) > 9:
+            end = date_bind.split("_")[1]
+        else :
+            end = None
+
+    if start is not None and end is None:
+        
+        expired= sqlalchemy.sql.column('expired')
+        
+        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+        query = notes.select().where(expired >= start)
+        
+    elif start is None and end is not None:
+        
+        expired= sqlalchemy.sql.column('expired')
+        
+        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+        query = notes.select().where(expired <= end)
+    elif start is not None and end is not None:
+        
+        expired= sqlalchemy.sql.column('expired')
+        
+        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+        query = notes.select().where(and_(expired >= start , expired <= end))
+    else:
+        
+        query = notes.select()
+    all_item = await database.fetch_all(query)
+    
+    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
 
 

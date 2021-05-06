@@ -16,3 +16,4 @@ fastapi_manage/test.db
 fastapi_manage/test.db
 fastapi_manage/test.db
 fastapi_manage/test.db
+*.db

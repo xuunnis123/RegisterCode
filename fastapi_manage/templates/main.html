@@ -31,7 +31,7 @@
       $("#end_datepicker").datepicker();
       $("#expired_datepicker").datepicker();
       $("#input_expired_datepicker").datepicker();
-      $("#edit_expired_datepicker").datepicker();
+      $('input[id^="edit_expired"]').datepicker();
       $("#save_button").click(function () {
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
@@ -212,6 +212,15 @@
     function update_code(id){
       alert("update");
       alert(id);
+      document.getElementById('save_'+id).style.display = 'none';
+      document.getElementById("edit_btn_"+id).style.display='block';
+      document.getElementById('edit_client_'+id).disabled=true;
+      document.getElementById('edit_expired_'+id).disabled=true;
+      document.getElementById('edit_mac_address_'+id).disabled=true;
+      expired_before = $("#edit_expired_"+id).val();
+      expired_buffer = expired_before.split("/");
+      expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
+      $("#edit_expired_"+id).val(expired_handle);
       client = $("#edit_client_"+id).val();
         expired = $("#edit_expired_"+id).val();
         mac_address=$("#edit_mac_address_"+id).val();
@@ -270,11 +279,10 @@
       
   </div>
   <div class="card">
-  
- 
-   
+    筆數: {{ count }} <br/>
+    總計頁數: {{ page }}
       {% for item in all_item%}
-      <table class="table table-striped">
+      <table class="table table-striped" id="manage_table">
     
         <tr class="table-light">
           <td class="table-light" id="saved_text_{{item['id']}}">Client<input type="text" id="edit_client_{{item['id']}}" class="input-group-text" value="{{item['user']}}" disabled=true/></td>
@@ -304,7 +312,16 @@
         
       </table>
       {% endfor %}
-     
+     <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    
+    <li class="page-item"><a class="page-link" href="#">i</a></li>
+
+   
+    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
   </div>
 
     <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

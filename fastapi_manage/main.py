@@ -74,8 +74,19 @@ async def main(request: Request,q:str=None):
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
+    print(all_item)
     
-    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item})
+    count = len(all_item)
+    if count%5 == 0:
+      page = count/5
+    else:
+      page = count//5 +1
+    print("page=",page)
+    now = 1
+    start_item = (now - 1)*5
+    end_item = start_item + 5
+    all_item = all_item[start_item:end_item]
+    return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page })
 
 @app.get("/mac/{mac}")
 async def main(request: Request,mac:str=None):

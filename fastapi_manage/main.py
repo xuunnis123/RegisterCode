@@ -101,8 +101,9 @@ async def main(request: Request,q:str=None, now:str=None):
     print("++++++")
     return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_user": select_user})
 
+@app.get("/mac/{mac}/page/{now}")
 @app.get("/mac/{mac}")
-async def main(request: Request,mac:str=None,now:str=None):
+async def main(request: Request,mac:str=None,now:str=None,mac_sear:str=None):
     print("main")
    
 
@@ -283,7 +284,7 @@ async def main(request: Request,date_bind:str=None,now:str=None):
         pre_page = 1
         next_page = 2
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
-
+    
     return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page,"start_time":start_time,"end_time":end_time})
 
 def cut_page(all_item):

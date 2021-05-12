@@ -42,8 +42,9 @@
           //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
           data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":mac_address }),
           success: function () { 
-          alert("Success ADD!")  //請求成功後執行的操作
+          alert("Success ADD!");  //請求成功後執行的操作
           //window.location.href="/"; //重新整理頁面
+          window.location.reload();
         }  
         }).then(setTimeout(location.reload.bind(location), 200));
       }
@@ -51,10 +52,44 @@
       );
       //alert($('#page').val());
       if($('#page').val() == $('#now').val()){
-        $('#next').attr('disabled','disabled');
+        $('#next').attr('disabled',true);
       }
-   
+      
+      if($('#search_bar').val() != "" ||$('#mac_search').val() != "" || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+        if($('#search_bar').val()!=""){
+          alert("1");
+        }
+        else if($('#mac_search').val() != ""){
+          alert("2");
+          var save= $('#mac_search').val();
+          var url= '/mac/'+save+'/page/1'
+          $('#next').attr('href',url);
+          $('#pre').attr('href',url);
+        }
+        else if($('#start_datepicker').val()!= ""){
+          alert("3");
+          /*
+          var save= $('#start_datepicker').val();
+          var save_buffer="";
+          var handle="";
+          save_buffer = save.split("/");
+          handle = save_buffer[2] + save_buffer[0] + save_buffer[1];
+          save=handle;
+          var url= '/date/'+save+'/page/1';
+          $('#next').attr('href',url);
+          $('#pre').attr('href',url);
+          */
+        }
+        else{
+          alert("4");
+          var save= $('#end_datepicker').val();
+          var url= '/date/'+save+'/page/1';
+          $('#next').attr('href',url);
+          $('#pre').attr('href',url);
+        }
+      }
 
+      
       $(".btn-secondary").click(function () {
         num=this.id;
         alert("Start to Download !")
@@ -136,10 +171,13 @@
         }
         });
       });
-      $("#cancel_button").click(function () {
+      
+      $('button[id^="cancel_button"]').click(function () {
         
         $("#mac_search").val("");
         $("#search_bar").val("");
+        $("#start_datepicker").val("");
+        $("#end_datepicker").val("");
         //q = document.getElementById("search_bar").innerHTML;
         $.ajax({
           url: "/",
@@ -302,7 +340,7 @@
   <ul class="pagination">
     <li class="page-item"><a class="page-link" href="/page/{{ pre_page }}" id="pre" >前一頁</a></li>
     
-    <li class="page-item"><a class="page-link" href="#"> 第{{ now }}頁</a></li>
+    <li class="page-item"><a class="page-link" href="#"> 第{{ now }} / {{ page }}頁</a></li>
 
    
     <li class="page-item"><a class="page-link" href="/page/{{ next_page }}" id="next" >下一頁</a></li>

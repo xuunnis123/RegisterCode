@@ -30,17 +30,16 @@
       $("#save_button").click(function () {
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
-        mac_address=$("#input_mac_address").val();
+        uuid=$("#input_uuid").val();
         console.log(client);
         console.log(expired);
-        console.log(mac_address);
+        console.log(uuid);
         expired_buffer = expired.split("/");
         expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
         $.ajax({
           url: "/register",
           type: "POST",
-          //data: { "user": user, "code":,"expired":expired, "mac_address":mac_address },
-          data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":mac_address }),
+          data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":uuid }),
           success: function () { 
           alert("Success ADD!");  //請求成功後執行的操作
           //window.location.href="/"; //重新整理頁面
@@ -55,14 +54,14 @@
         $('#next').attr('disabled',true);
       }
       
-      if($('#search_bar').val() != "" ||$('#mac_search').val() != "" || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+      if($('#search_bar').val() != "" ||$('#uuid_search').val() != "" || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
         if($('#search_bar').val()!=""){
           alert("1");
         }
-        else if($('#mac_search').val() != ""){
+        else if($('#uuid_search').val() != ""){
           alert("2");
-          var save= $('#mac_search').val();
-          var url= '/mac/'+save+'/page/1'
+          var save= $('#uuid_search').val();
+          var url= '/uuid/'+save+'/page/1'
           $('#next').attr('href',url);
           $('#pre').attr('href',url);
         }
@@ -123,17 +122,17 @@
         }
         });
       });
-      $("#mac_search_button").click(function () {
+      $("#uuid_search_button").click(function () {
         
-        mac=$("#mac_search").val();
+        uuid=$("#uuid_search").val();
         
         //q = document.getElementById("search_bar").innerHTML;
         
         $.ajax({
-          url: ((mac==null)?"/":"/mac/" + mac),
+          url: ((uuid==null)?"/":"/uuid/" + uuid),
           type: "GET",
           success: function (filter_item) { 
-          window.location.href=((mac==null)?"/":"/mac/" + mac);
+          window.location.href=((uuid==null)?"/":"/uuid/" + uuid);
         }
         });
       });
@@ -174,7 +173,7 @@
       
       $('button[id^="cancel_button"]').click(function () {
         
-        $("#mac_search").val("");
+        $("#uuid_search").val("");
         $("#search_bar").val("");
         $("#start_datepicker").val("");
         $("#end_datepicker").val("");
@@ -211,7 +210,7 @@
         alert("disable");
       　document.getElementById('edit_client_'+id).disabled=false;
       document.getElementById('edit_expired_'+id).disabled=false;
-      document.getElementById('edit_mac_address_'+id).disabled=false;
+      document.getElementById('edit_uuid_'+id).disabled=false;
       document.getElementById('save_'+id).style.display = 'block';
       document.getElementById("edit_btn_"+id).style.display='none';
     　}
@@ -225,7 +224,7 @@
       document.getElementById("edit_btn_"+id).style.display='block';
       document.getElementById('edit_client_'+id).disabled=true;
       document.getElementById('edit_expired_'+id).disabled=true;
-      document.getElementById('edit_mac_address_'+id).disabled=true;
+      document.getElementById('edit_uuid_'+id).disabled=true;
       expired_before = $("#edit_expired_"+id).val();
       
       if(expired_before.match("/")!=null){
@@ -241,12 +240,12 @@
       
       client = $("#edit_client_"+id).val();
         expired = $("#edit_expired_"+id).val();
-        mac_address=$("#edit_mac_address_"+id).val();
+        uuid=$("#edit_uuid_"+id).val();
        
         $.ajax({
           url: "/register/" + id,
           type: "PUT",
-          data: JSON.stringify({ "user": client,"expired":expired, "mac_address":mac_address }),
+          data: JSON.stringify({ "user": client,"expired":expired, "mac_address":uuid }),
           success: function () { 
           alert("Success Edit!")  //請求成功後執行的操作
            window.location.reload()  //重新整理頁面
@@ -265,7 +264,7 @@
        
       <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="input-group-text"/></span>
            
-      <span class="input-group-text" id="inputGroup-sizing-default">MAC Address <input type="text" placeholder="New MAC Address....." id="input_mac_address" class="input-group-text"/></span>
+      <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID Address....." id="input_uuid" class="input-group-text"/></span>
        
       
       <button type="button"  id="save_button" class="btn btn-outline-success">儲存</button>
@@ -279,8 +278,8 @@
       <div class="input-group mb-3">
         <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_user}}>
         <button class="btn btn-primary" id="client_search_button">搜尋</button>
-        <input type="text" id="mac_search" name="mac" class="form-control" placeholder="Search MAC address..." value={{select_mac}}>
-        <button class="btn btn-primary" id="mac_search_button">搜尋</button>
+        <input type="text" id="uuid_search" name="uuid" class="form-control" placeholder="Search UUID address..." value={{select_uuid}}>
+        <button class="btn btn-primary" id="uuid_search_button">搜尋</button>
       </div>
       <div class="input-group mb-3">
         
@@ -310,7 +309,7 @@
         <tr class="table-light">
           <td class="table-light" id="saved_text_{{item['id']}}">Client<input type="text" id="edit_client_{{item['id']}}" class="input-group-text" value="{{item['user']}}" disabled=true/></td>
           <td class="table-light">Expired<input type="text" id="edit_expired_{{item['id']}}" class="input-group-text" value="{{item['expired']}}" disabled=true/></td>
-          <td class="table-light">MAC_ADDRESS<input type="text" id="edit_mac_address_{{item['id']}}" class="input-group-text" value="{{item['mac_address']}}" disabled=true/></td>
+          <td class="table-light">UUID<input type="text" id="edit_uuid_{{item['id']}}" class="input-group-text" value="{{item['mac_address']}}" disabled=true/></td>
   
       <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
         編輯
@@ -346,28 +345,6 @@
     <li class="page-item"><a class="page-link" href="/page/{{ next_page }}" id="next" >下一頁</a></li>
   </ul>
 </nav>
-  <!---->
-
-    <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">New Code</h5>
-            
-          </div>
-          <div class="modal-body">
-            <input type="text" placeholder="New Client....." id="input_client" />
-            
-            <input type="text" id="expired_datepicker">
-            <input type="text" placeholder="MAC Address....." id="input_mac_address" />
-          </div>
-          <div class="modal-footer">
-            
-          </div>
-        </div>
-      </div>
-    </div>
-  
   
   </body>
 

@@ -101,20 +101,20 @@ async def main(request: Request,q:str=None, now:str=None):
     print("++++++")
     return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_user": select_user})
 
-@app.get("/mac/{mac}/page/{now}")
-@app.get("/mac/{mac}")
-async def main(request: Request,mac:str=None,now:str=None,mac_sear:str=None):
+@app.get("/uuid/{uuid}/page/{now}")
+@app.get("/uuid/{uuid}")
+async def main(request: Request,uuid:str=None,now:str=None):
     print("main")
    
 
-    print("mac=",mac)
-    select_mac=""
-    if mac is not None:
+    print("uuid=",uuid)
+    select_uuid=""
+    if uuid is not None:
         mac_address= sqlalchemy.sql.column('mac_address')
-        select_mac=mac
+        select_uuid=uuid
         print(mac_address)
     
-        query = notes.select().where(mac_address==mac)
+        query = notes.select().where(mac_address==uuid)
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
@@ -134,7 +134,7 @@ async def main(request: Request,mac:str=None,now:str=None,mac_sear:str=None):
         next_page = 2
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
 
-    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item,"select_mac":select_mac,"count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page})
+    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item,"select_uuid":select_uuid,"count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page})
 
 @app.post('/register')
 async def create(code:CodeIn):

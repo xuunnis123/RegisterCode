@@ -61,18 +61,17 @@ async def shutdown():
     await database.disconnect()
 
 @app.get("/page/{now}")
+@app.get("/client/{q}/page/{now}")
 @app.get("/client/{q}")
 @app.get("/")
 async def main(request: Request,q:str=None, now:str=None):
-    print("main")
-    #.where(user==q)
-    print("q=",q)
+
     now_page = 1
     select_user=""
     if q is not None:
         user= sqlalchemy.sql.column('user')
         select_user=q
-        print(user)
+       
         #query = notes.select(sqlalchemy.text('*')).where(user==q)
         query = notes.select().where(user==q)
     else:
@@ -86,36 +85,30 @@ async def main(request: Request,q:str=None, now:str=None):
     next_page = 0
     
     if now is not None:
-        print("id")
+     
         pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
     else:
-        print("else")
+  
         now=1
         pre_page = 1
         next_page = 2
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
 
         
-    print("pre=",pre_page)
-    print("page=",page)
-    print("next=",next_page)
-    print("++++++")
     return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_user": select_user})
 
 @app.get("/uuid/{uuid}/page/{now}")
 @app.get("/uuid/{uuid}")
 async def main(request: Request,uuid:str=None,now:str=None):
-    print("main")
-   
 
-    print("uuid=",uuid)
+
     select_uuid=""
     if uuid is not None:
         mac_address= sqlalchemy.sql.column('mac_address')
         select_uuid=uuid
-        print(mac_address)
+       
     
-        query = notes.select().where(mac_address==uuid)
+        query = notes.select().where(mac_address == uuid)
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
@@ -126,10 +119,10 @@ async def main(request: Request,uuid:str=None,now:str=None):
     next_page = 0
     now_page=1
     if now is not None:
-        print("id")
+       
         pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
     else:
-        print("else")
+        
         now=1
         pre_page = 1
         next_page = 2
@@ -163,10 +156,9 @@ async def create(code:CodeIn):
 @app.get('/register/{code_id}')
 async def get_one(request:Request,code_id:int):
     query=notes.select().where(notes.c.id==code_id)
-    print(query)
+    
     uni_item=await database.fetch_one(query)
 
-    print(uni_item)
     if uni_item is None:
         return{
             "code":"ok",
@@ -183,7 +175,7 @@ async def get_one(request:Request,code_id:int):
 
 @app.put('/register/{code_id}')
 async def update(code:CodeIn,code_id=int):
-    print("put")
+   
     code_arg = code.expired + "_"
     code_arg+= code.mac_address
     encode=encode_rsa(code_arg)
@@ -198,7 +190,7 @@ async def update(code:CodeIn,code_id=int):
     
     query=notes.select().where(notes.c.id == record_id)
     user=await database.fetch_one(query)
-    print("user:",user)
+    
     return {
         "code":"ok",
         "message":"success",
@@ -209,7 +201,7 @@ async def update(code:CodeIn,code_id=int):
 
 @app.delete("/register/{code_id}")
 async def delete(code_id:int):
-    print("delete")
+   
     query=notes.delete().where(notes.c.id == code_id)
     await database.execute(query)
     return {
@@ -220,7 +212,7 @@ async def delete(code_id:int):
 @app.get("/download/{code_id}")
 async def download(code_id:int):
     query=notes.select().where(notes.c.id==code_id)
-    print(query)
+
     uni_item=await database.fetch_one(query)
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
@@ -228,8 +220,6 @@ async def download(code_id:int):
 @app.get("/date/{pass_date}/page/{now}")
 @app.get("/date/{date_bind}")
 async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=None):
-    print("enter main")
-    print("date_bind=",date_bind)
 
     start_time=""
     end_time=""
@@ -280,15 +270,12 @@ async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=No
 
     pre_page = 0
     next_page = 0
-    print("page,count=",page,count)
+    
     if now is not None:
-        print("id")
-        print("pre_page=",pre_page)
-        print("next_page=",next_page)
-        print("now=",now)
+  
         pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
     else:
-        print("else")
+  
         now = 1
         pre_page = 1
         next_page = 2
@@ -298,24 +285,21 @@ async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=No
 
 def cut_page(all_item):
     count = len(all_item)
-    print(all_item)
+
     
     if count%5 == 0:
-      page = count/5
+      page = count//5
     else:
       page = count//5 +1
     return count,page
 def pagination(now,pre_page,next_page,page,all_item):
     now_page=int(now)
-    print("now_pate=", now_page)
-    print("type=", type(now_page))
+   
     start_item = (now_page - 1)*5
     end_item = start_item + 5
     all_item = all_item[start_item:end_item]
-    print("next_page=",next_page)
 
     if now_page > 1 and now_page < page:
-        print("middle")
         next_page = now_page + 1
         if now_page-1 >0:
             pre_page = now_page - 1
@@ -323,11 +307,9 @@ def pagination(now,pre_page,next_page,page,all_item):
             pre_page = 1
         
     elif now_page == 1 and now_page < page:
-        print("first")
         next_page = now_page + 1
         pre_page = 1
     elif now_page > 1 and now_page == page:
-        print("final")
         next_page = now_page
         if now_page-1 >0:
             pre_page = now_page - 1

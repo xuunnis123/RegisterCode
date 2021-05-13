@@ -31,39 +31,47 @@
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
         uuid=$("#input_uuid").val();
-        console.log(client);
-        console.log(expired);
-        console.log(uuid);
+      
         expired_buffer = expired.split("/");
         expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
         $.ajax({
           url: "/register",
           type: "POST",
           data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":uuid }),
+          
           success: function () { 
           alert("Success ADD!");  //請求成功後執行的操作
-          //window.location.href="/"; //重新整理頁面
-          window.location.reload();
+            
         }  
         }).then(setTimeout(location.reload.bind(location), 200));
+        
+          
       }
         
       );
-      //alert($('#page').val());
+      
       if($('#page').val() == $('#now').val()){
         $('#next').attr('disabled',true);
       }
       
       if($('#search_bar').val() != "" ||$('#uuid_search').val() != "" || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
         var now = $('#now').val();
-        console.log("now=",now);
+       
         if($('#search_bar').val()!=""){
+          
+          
           $('#search_bar').val($('#search_bar').val());
-          alert("1");
+   
+          var save= $('#search_bar').val();
+          var url= '/client/'+save+'/page/'+now;
+          var pre_page = $('#pre_page').val();
+          var next_page = $('#next_page').val();
+          $('#next').attr('href','/client/'+save+'/page/'+next_page);
+          $('#pre').attr('href','/client/'+save+'/page/'+pre_page);
         }
         else if($('#uuid_search').val() != ""){
           $('#uuid_search').val($('#uuid_search').val());
-          alert("2");
+          
           var save= $('#uuid_search').val();
           var url= '/uuid/'+save+'/page/'+now;
           var pre_page = $('#pre_page').val();
@@ -85,17 +93,7 @@
          
           $('#next').attr('href','/date/'+pass_result+'/page/'+next_page);
           $('#pre').attr('href','/date/'+pass_result+'/page/'+pre_page);
-          /*
-          var save= $('#start_datepicker').val();
-          var save_buffer="";
-          var handle="";
-          save_buffer = save.split("/");
-          handle = save_buffer[2] + save_buffer[0] + save_buffer[1];
-          save=handle;
-          var url= '/date/'+save+'/page/1';
-          $('#next').attr('href',url);
-          $('#pre').attr('href',url);
-          */
+       
         }
         
           
@@ -116,7 +114,7 @@
       $(".btn-danger").click(function () {
         num = this.id;
         input = document.getElementById("saved_text_" + num).innerHTML;
-        console.log(input);
+      
         $.ajax({
           url: "/register/" + num,
           type: "DELETE",
@@ -154,7 +152,7 @@
       $("#date_search_button").click(function () {
         start = $("#start_datepicker").val();
         end = $("#end_datepicker").val();
-        console.log(end.length);
+        
         
         var start_buffer = "";
         var start_handle = "";
@@ -212,16 +210,17 @@
     }
     function change_disabled(id){
       
-      alert(id);
+      
+
     
     　if(document.getElementById('edit_client_'+id).disabled===false){
-        alert("enable");
+
       　document.getElementById('edit_client_'+id).disabled=true;
         document.getElementByName('save_'+id).style.display = 'none';
         document.getElementById("edit_btn_"+id).style.display='block';
 
     　}else{
-        alert("disable");
+       
       　document.getElementById('edit_client_'+id).disabled=false;
       document.getElementById('edit_expired_'+id).disabled=false;
       document.getElementById('edit_uuid_'+id).disabled=false;
@@ -230,8 +229,7 @@
     　}
     }
     function update_code(id){
-      alert("update");
-      alert(id);
+     
       var buffer = document.getElementById('edit_expired_'+id).value;
       
       document.getElementById('save_'+id).style.display = 'none';
@@ -260,36 +258,40 @@
           url: "/register/" + id,
           type: "PUT",
           data: JSON.stringify({ "user": client,"expired":expired, "mac_address":uuid }),
+          
           success: function () { 
           alert("Success Edit!")  //請求成功後執行的操作
            window.location.reload()  //重新整理頁面
         }
         }).then(setTimeout(location.reload.bind(location), 200));
+       
     }
     
   </script>
     
 <div class="ui raised very padded text container segment">
     <h1 class="display-4" style="text-align: center;">授權碼管理頁面</h1>
-    <button type="button" class="btn btn-primary" id="add_button" onclick="show_hide()">
-      新增
-    </button>
-    <div id="add_section" style="display:none" class="input-group mb-3">
-      <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="input-group-text"/></span>
-       
-      <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="input-group-text"/></span>
-           
-      <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID....." id="input_uuid" class="input-group-text"/></span>
-       
-      
-      <button type="button"  id="save_button" class="btn btn-outline-success">儲存</button>
-      <button class="btn btn-warning" id="cancel_button">取消</button>
-    </div>
     
-    <h2 class="display-4">授權碼管理清單</h2>
+    
+    <br/>
 
     <div class="container">
-
+      <button type="button" class="btn btn-primary" id="add_button" onclick="show_hide()">
+        新增
+      </button>
+      
+      <div id="add_section" style="display:none" class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="input-group-text"/></span>
+         
+        <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="input-group-text"/></span>
+             
+        <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID....." id="input_uuid" class="input-group-text"/></span>
+         
+        
+        <button type="button"  id="save_button" class="btn btn-outline-success">儲存</button>
+        <button class="btn btn-warning" id="cancel_button">取消</button>
+      </div>
+   
       <div class="input-group mb-3">
         <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_user}}>
         <button class="btn btn-primary" id="client_search_button">搜尋</button>
@@ -302,25 +304,21 @@
         
         <input type="text" id="end_datepicker" class="form-control" placeholder="End Expired Date..." value={{end_time}}>
         <button id="date_search_button" class="btn btn-primary">搜尋</button>
+        
       </div>
-      <br>
-      
-    <br/>
-      <button class="btn btn-warning" id="cancel_button">取消</button>
+      <div>
+      <button class="btn btn-warning" id="cancel_button">搜尋取消</button>
+    </div>
       
   </div>
-  
+  <h3 class="display-6" style="text-align: center;">授權碼管理清單</h3>
   <!---->
     <input type="hidden" id="count" value="{{ count }}">
     <input type="hidden" id="page" value="{{ page }}">
     <input type="hidden" id="now" value="{{ now }}">
     <input type="hidden" id="pre_page" value="{{ pre_page }}">
     <input type="hidden" id="next_page" value="{{ next_page }}">
-      <hr/>
       
-        <h4>筆數: {{ count }} <br/>
-        總計頁數: {{ page }}</h4>
-      <hr/>
       {% for item in all_item%}
       <table class="table table-hover" id="manage_table">
         
@@ -357,13 +355,14 @@
   <ul class="pagination">
     <li class="page-item"><a class="page-link" href="/page/{{ pre_page }}" id="pre" >前一頁</a></li>
     
-    <li class="page-item"><a class="page-link" href="#"> 第{{ now }} / {{ page }}頁</a></li>
+    <li class="page-item"><a class="page-link" href="#"> 第 {{ now }} / {{ page }} 頁，( 共 {{ count }} 筆 )</a></li>
 
    
     <li class="page-item"><a class="page-link" href="/page/{{ next_page }}" id="next" >下一頁</a></li>
   </ul>
 </nav>
   
+
   </body>
 
 </html>

@@ -22,22 +22,23 @@
       var filter_item=[];
 
      
-      $("#start_datepicker").datepicker();
-      $("#end_datepicker").datepicker();
-      $("#expired_datepicker").datepicker();
-      $("#input_expired_datepicker").datepicker();
-      $('input[id^="edit_expired"]').datepicker();
+      $("#start_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#end_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#expired_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#input_expired_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $('input[id^="edit_expired"]').datepicker({ dateFormat: 'yymmdd' });
       $("#save_button").click(function () {
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
         uuid=$("#input_uuid").val();
-      
+        /*
         expired_buffer = expired.split("/");
         expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
+        */
         $.ajax({
           url: "/register",
           type: "POST",
-          data: JSON.stringify({ "user": client,"expired":expired_handle, "mac_address":uuid }),
+          data: JSON.stringify({ "client": client,"expired":expired, "uuid":uuid }),
           
           success: function () { 
           alert("Success ADD!");  //請求成功後執行的操作
@@ -54,7 +55,8 @@
         $('#next').attr('disabled',true);
       }
       
-      if($('#search_bar').val() != "" ||$('#uuid_search').val() != "" || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+      if($('#search_bar').val() != ""  || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+        
         var now = $('#now').val();
        
         if($('#search_bar').val()!=""){
@@ -69,21 +71,12 @@
           $('#next').attr('href','/client/'+save+'/page/'+next_page);
           $('#pre').attr('href','/client/'+save+'/page/'+pre_page);
         }
-        else if($('#uuid_search').val() != ""){
-          $('#uuid_search').val($('#uuid_search').val());
-          
-          var save= $('#uuid_search').val();
-          var url= '/uuid/'+save+'/page/'+now;
-          var pre_page = $('#pre_page').val();
-          var next_page = $('#next_page').val();
-          $('#next').attr('href','/uuid/'+save+'/page/'+next_page);
-          $('#pre').attr('href','/uuid/'+save+'/page/'+pre_page);
-        }
+        
         else if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
           var start = $('#start_datepicker').val();
           var end = $('#end_datepicker').val();
           var pass_result="";
-         
+          console.log("start:",start);
           pass_result = start + "_" + end;
          
           
@@ -134,20 +127,7 @@
         }
         });
       });
-      $("#uuid_search_button").click(function () {
-        
-        uuid=$("#uuid_search").val();
-        
-        //q = document.getElementById("search_bar").innerHTML;
-        
-        $.ajax({
-          url: ((uuid==null)?"/":"/uuid/" + uuid),
-          type: "GET",
-          success: function (filter_item) { 
-          window.location.href=((uuid==null)?"/":"/uuid/" + uuid);
-        }
-        });
-      });
+    
        
       $("#date_search_button").click(function () {
         start = $("#start_datepicker").val();
@@ -160,17 +140,17 @@
         var end_handle = "";
         if (start.length != 0){
           
-          start_buffer = start.split("/");
-          start_handle = start_buffer[2] + start_buffer[0] + start_buffer[1];
+          //start_buffer = start.split("/");
+          //start_handle = start_buffer[2] + start_buffer[0] + start_buffer[1];
         }
         if (end.length != 0){
          
-          end_buffer = end.split("/");
-          end_handle = end_buffer[2] + end_buffer[0] + end_buffer[1];
+          //end_buffer = end.split("/");
+          //end_handle = end_buffer[2] + end_buffer[0] + end_buffer[1];
         }
         var date_bind="";
-        if(start_handle != null || end_handle!= null ){
-          date_bind=start_handle+"_"+end_handle;
+        if(start != null || end != null ){
+          date_bind=start+"_"+end;
         }
         
         $.ajax({
@@ -257,7 +237,7 @@
         $.ajax({
           url: "/register/" + id,
           type: "PUT",
-          data: JSON.stringify({ "user": client,"expired":expired, "mac_address":uuid }),
+          data: JSON.stringify({ "client": client,"expired":expired, "uuid":uuid }),
           
           success: function () { 
           alert("Success Edit!")  //請求成功後執行的操作
@@ -293,7 +273,7 @@
       </div>
    
       <div class="input-group mb-3">
-        <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_user}}>
+        <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_client}}>
         <button class="btn btn-primary" id="client_search_button">搜尋</button>
 
       </div>
@@ -324,18 +304,18 @@
           <td>Client</td>
           <td>Expired</td>
           <td>UUID</td>
-          <td>建立時間</td>
           <td>最近修改時間</td>
+          <td>建立時間</td>
           <td>操作</td>
           
         </tr>
         {% for item in all_item%}
         <tr class="table-light">
-          <td class="table-light" id="saved_text_{{item['id']}}"><input type="text" id="edit_client_{{item['id']}}" class="form-control" value="{{item['user']}}" disabled=true/></td>
+          <td class="table-light" id="saved_text_{{item['id']}}"><input type="text" id="edit_client_{{item['id']}}" class="form-control" value="{{item['client']}}" disabled=true/></td>
           <td class="table-light"><input type="text" id="edit_expired_{{item['id']}}" class="form-control" value="{{item['expired']}}" disabled=true/></td>
-          <td class="table-light"><input type="text" id="edit_uuid_{{item['id']}}" class="form-control" value="{{item['mac_address']}}" disabled=true/></td><!--input-group-text-->
-          <td class="table-light">Create Time</td>
-          <td class="table-light">Edit Time</td>
+          <td class="table-light"><input type="text" id="edit_uuid_{{item['id']}}" class="form-control" value="{{item['uuid']}}" disabled=true/></td><!--input-group-text-->
+          <td class="table-light">{{item['edited_time']}}</td>
+          <td class="table-light">{{item['created_time']}}</td>
           <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
         編輯
           </button>

@@ -4,7 +4,7 @@ from fastapi import FastAPI,Response,Request,Form,Depends,BackgroundTasks
 from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse,JSONResponse
 from pydantic import BaseModel,Field
 from typing import Optional, Text,List
-from datetime import datetime
+from datetime import date, datetime
 from rsa_company_gen import encode_rsa,generate_licensefile
 from fastapi.templating import Jinja2Templates
 import sqlalchemy
@@ -12,6 +12,8 @@ from sqlalchemy import and_
 import databases
 import starlette.status as status
 import json
+from datetime import datetime
+
 DATABASE_URL = "sqlite:///./test.db"
 
 metadata = sqlalchemy.MetaData()
@@ -21,10 +23,12 @@ notes=sqlalchemy.Table(
     "notes",
     metadata,
     sqlalchemy.Column("id",sqlalchemy.Integer,primary_key=True),
-    sqlalchemy.Column("user",sqlalchemy.String(500)),
+    sqlalchemy.Column("client",sqlalchemy.String(500)),
     sqlalchemy.Column("code",sqlalchemy.String(500)),
     sqlalchemy.Column("expired",sqlalchemy.String(500)),
-    sqlalchemy.Column("mac_address",sqlalchemy.String(500)),
+    sqlalchemy.Column("uuid",sqlalchemy.String(500)),
+    sqlalchemy.Column("created_time",sqlalchemy.DateTime),
+    sqlalchemy.Column("edited_time",sqlalchemy.DateTime),
 
 )
 engine=sqlalchemy.create_engine(
@@ -40,17 +44,21 @@ codedb = []
 all_item=[]
 uni_item=[]
 class CodeIn(BaseModel):
-    user: str
+    client: str
     code: Optional[str]=False
     expired: str
-    mac_address:str
+    uuid:str
+    created_time:Optional[datetime]=False
+    edited_time:Optional[datetime]=False
 # post model
 class Code(BaseModel):
     id: int
-    user: str
+    client: str
     code: Optional[str]=False
     expired: str
-    mac_address:str
+    uuid:str
+    created_time:Optional[datetime]=False
+    edited_time:Optional[datetime]=False
 
 @app.on_event("startup")
 async def connect():
@@ -67,13 +75,12 @@ async def shutdown():
 async def main(request: Request,q:str=None, now:str=None):
 
     now_page = 1
-    select_user=""
+    select_client=""
     if q is not None:
-        user= sqlalchemy.sql.column('user')
-        select_user=q
-       
-        #query = notes.select(sqlalchemy.text('*')).where(user==q)
-        query = notes.select().where(user==q)
+        client= sqlalchemy.sql.column('client')
+        select_client=q
+    
+        query = notes.select().where(client==q)
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
@@ -95,7 +102,7 @@ async def main(request: Request,q:str=None, now:str=None):
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
 
         
-    return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_user": select_user})
+    return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_client": select_client})
 
 @app.get("/uuid/{uuid}/page/{now}")
 @app.get("/uuid/{uuid}")
@@ -104,11 +111,11 @@ async def main(request: Request,uuid:str=None,now:str=None):
 
     select_uuid=""
     if uuid is not None:
-        mac_address= sqlalchemy.sql.column('mac_address')
+        uuid= sqlalchemy.sql.column('uuid')
         select_uuid=uuid
        
     
-        query = notes.select().where(mac_address == uuid)
+        query = notes.select().where(uuid == uuid)
     else:
         query = notes.select()
     all_item=await database.fetch_all(query)
@@ -135,14 +142,16 @@ async def create(code:CodeIn):
     
   
     code_arg = code.expired + "_"
-    code_arg+= code.mac_address
+    code_arg+= code.uuid
     encode=encode_rsa(code_arg)
     #code.code=encode
     query=notes.insert().values(
-        user=code.user,
+        client=code.client,
         expired=code.expired,
         code=encode,
-        mac_address=code.mac_address
+        uuid = code.uuid,
+        created_time = datetime.now(),
+        edited_time = datetime.now(),
     )
     record_id=await database.execute(query)
     return {
@@ -167,9 +176,9 @@ async def get_one(request:Request,code_id:int):
     return {
         "code":"ok",
         "message":"success",
-        "user":uni_item['user'],
+        "client":uni_item['client'],
         "expired":uni_item['expired'],
-        "mac_address":uni_item['mac_address']
+        "uuid":uni_item['uuid']
     }
 
 
@@ -177,25 +186,26 @@ async def get_one(request:Request,code_id:int):
 async def update(code:CodeIn,code_id=int):
    
     code_arg = code.expired + "_"
-    code_arg+= code.mac_address
+    code_arg+= code.uuid
     encode=encode_rsa(code_arg)
     query=notes.update().where(notes.c.id==code_id).values(
-        user=code.user,
+        client=code.client,
         expired=code.expired,
         code=encode,
-        mac_address=code.mac_address
+        uuid=code.uuid,
+        edited_time = datetime.now(),
     )
   
     record_id= await database.execute(query)
     
     query=notes.select().where(notes.c.id == record_id)
-    user=await database.fetch_one(query)
+    client=await database.fetch_one(query)
     
     return {
         "code":"ok",
         "message":"success",
         "expired":code.expired,
-        "mac_address":code.mac_address
+        "uuid":code.uuid
     }
 
 
@@ -244,21 +254,18 @@ async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=No
     if start is not None and end is None:
         
         expired= sqlalchemy.sql.column('expired')
-        
-        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+     
         query = notes.select().where(expired >= start)
         
     elif start is None and end is not None:
         
         expired= sqlalchemy.sql.column('expired')
-        
-        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+
         query = notes.select().where(expired <= end)
     elif start is not None and end is not None:
         
         expired= sqlalchemy.sql.column('expired')
-        
-        #query = notes.select(sqlalchemy.text('*')).where(user==q)
+
         query = notes.select().where(and_(expired >= start , expired <= end))
     else:
         

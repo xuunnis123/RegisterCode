@@ -1,4 +1,5 @@
 # app.py
+from sqlalchemy.sql.expression import null
 from fastapi import FastAPI,Response,Request,Form,Depends,BackgroundTasks
 from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse,JSONResponse
 from pydantic import BaseModel,Field
@@ -224,14 +225,19 @@ async def download(code_id:int):
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
 
-
+@app.get("/date/{pass_date}/page/{now}")
 @app.get("/date/{date_bind}")
-async def main(request: Request,date_bind:str=None,now:str=None):
+async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=None):
+    print("enter main")
     print("date_bind=",date_bind)
-    #.where(user==q)
+
     start_time=""
     end_time=""
     now_page = 1
+    if pass_date is not None:
+        date_bind = pass_date
+
+    
     if date_bind.find("_") == 0:
         start = None
         end = date_bind[1:]
@@ -274,13 +280,16 @@ async def main(request: Request,date_bind:str=None,now:str=None):
 
     pre_page = 0
     next_page = 0
-    
+    print("page,count=",page,count)
     if now is not None:
         print("id")
+        print("pre_page=",pre_page)
+        print("next_page=",next_page)
+        print("now=",now)
         pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
     else:
         print("else")
-        now=1
+        now = 1
         pre_page = 1
         next_page = 2
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)

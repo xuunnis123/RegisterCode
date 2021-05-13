@@ -281,11 +281,11 @@
       </button>
       
       <div id="add_section" style="display:none" class="input-group mb-3">
-        <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="input-group-text"/></span>
+        <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="form-control"/></span>
          
-        <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="input-group-text"/></span>
+        <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="form-control"/></span>
              
-        <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID....." id="input_uuid" class="input-group-text"/></span>
+        <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID....." id="input_uuid" class="form-control"/></span>
          
         
         <button type="button"  id="save_button" class="btn btn-outline-success">儲存</button>
@@ -295,8 +295,7 @@
       <div class="input-group mb-3">
         <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_user}}>
         <button class="btn btn-primary" id="client_search_button">搜尋</button>
-        <input type="text" id="uuid_search" name="uuid" class="form-control" placeholder="Search UUID..." value={{select_uuid}}>
-        <button class="btn btn-primary" id="uuid_search_button">搜尋</button>
+
       </div>
       <div class="input-group mb-3">
         
@@ -319,15 +318,25 @@
     <input type="hidden" id="pre_page" value="{{ pre_page }}">
     <input type="hidden" id="next_page" value="{{ next_page }}">
       
-      {% for item in all_item%}
+      
       <table class="table table-hover" id="manage_table">
-        
+        <tr>
+          <td>Client</td>
+          <td>Expired</td>
+          <td>UUID</td>
+          <td>建立時間</td>
+          <td>最近修改時間</td>
+          <td>操作</td>
+          
+        </tr>
+        {% for item in all_item%}
         <tr class="table-light">
-          <td class="table-light" id="saved_text_{{item['id']}}">Client<input type="text" id="edit_client_{{item['id']}}" class="input-group-text" value="{{item['user']}}" disabled=true/></td>
-          <td class="table-light">Expired<input type="text" id="edit_expired_{{item['id']}}" class="input-group-text" value="{{item['expired']}}" disabled=true/></td>
-          <td class="table-light">UUID<input type="text" id="edit_uuid_{{item['id']}}" class="input-group-text" value="{{item['mac_address']}}" disabled=true/></td>
-  
-      <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
+          <td class="table-light" id="saved_text_{{item['id']}}"><input type="text" id="edit_client_{{item['id']}}" class="form-control" value="{{item['user']}}" disabled=true/></td>
+          <td class="table-light"><input type="text" id="edit_expired_{{item['id']}}" class="form-control" value="{{item['expired']}}" disabled=true/></td>
+          <td class="table-light"><input type="text" id="edit_uuid_{{item['id']}}" class="form-control" value="{{item['mac_address']}}" disabled=true/></td><!--input-group-text-->
+          <td class="table-light">Create Time</td>
+          <td class="table-light">Edit Time</td>
+          <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
         編輯
           </button>
           <div id="save_{{item['id']}}" style="display:none">
@@ -347,9 +356,9 @@
           </td>
         </tr>
         
-        
+        {% endfor %}
       </table>
-      {% endfor %}
+      
 
      <nav aria-label="Page navigation example">
   <ul class="pagination">

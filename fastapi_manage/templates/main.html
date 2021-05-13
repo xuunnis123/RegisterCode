@@ -31,10 +31,7 @@
         client = $("#input_client").val();
         expired = $("#input_expired_datepicker").val();
         uuid=$("#input_uuid").val();
-        /*
-        expired_buffer = expired.split("/");
-        expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
-        */
+        
         $.ajax({
           url: "/register",
           type: "POST",
@@ -76,7 +73,7 @@
           var start = $('#start_datepicker').val();
           var end = $('#end_datepicker').val();
           var pass_result="";
-          console.log("start:",start);
+         
           pass_result = start + "_" + end;
          
           
@@ -117,7 +114,7 @@
         
         q=$("#search_bar").val();
       
-        //q = document.getElementById("search_bar").innerHTML;
+    
         
         $.ajax({
           url: ((q==null)?"/":"/client/" + q),
@@ -138,16 +135,7 @@
         var start_handle = "";
         var end_buffer = "";
         var end_handle = "";
-        if (start.length != 0){
-          
-          //start_buffer = start.split("/");
-          //start_handle = start_buffer[2] + start_buffer[0] + start_buffer[1];
-        }
-        if (end.length != 0){
-         
-          //end_buffer = end.split("/");
-          //end_handle = end_buffer[2] + end_buffer[0] + end_buffer[1];
-        }
+        
         var date_bind="";
         if(start != null || end != null ){
           date_bind=start+"_"+end;
@@ -169,7 +157,7 @@
         $("#search_bar").val("");
         $("#start_datepicker").val("");
         $("#end_datepicker").val("");
-        //q = document.getElementById("search_bar").innerHTML;
+       
         $.ajax({
           url: "/",
           type: "GET",

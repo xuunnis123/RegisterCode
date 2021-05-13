@@ -144,7 +144,6 @@ async def create(code:CodeIn):
     code_arg = code.expired + "_"
     code_arg+= code.uuid
     encode=encode_rsa(code_arg)
-    #code.code=encode
     query=notes.insert().values(
         client=code.client,
         expired=code.expired,

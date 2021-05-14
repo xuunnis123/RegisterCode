@@ -98,29 +98,19 @@ async def main(request: Request,q:str=None, now:str=None, order:int=None):
     
         query = notes.select().where(client==q)
     else:
-        #query = notes.select().order_by(notes.c.client.desc())
-        print("else")
         if order_asc == 1:
-            print("order_asc == 1")
             order_asc = 0
-            print("order_asc:",order_asc)
             query = notes.select().order_by(notes.c.client.asc()) 
         elif order_asc == 0:
-            print("order_asc == 0")
             order_asc = 1
-            print("order_asc:",order_asc)
             query = notes.select().order_by(notes.c.client.desc()) #desc
         elif order_asc == 2:
-            print("order_asc ==2")
             order_expired_asc = 3
             order_asc = 0
-            print("order_asc:",order_asc)
             query = notes.select().order_by(notes.c.expired.asc()) 
         elif order_asc == 3:
-            print("order_asc == 3")
             order_expired_asc = 2
             order_asc = 0
-            print("order_asc:",order_asc)
             query = notes.select().order_by(notes.c.expired.desc()) #desc
         #ordered_query = query
     all_item=await database.fetch_all(query)

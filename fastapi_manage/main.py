@@ -1,5 +1,6 @@
 # app.py
 from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.sqltypes import Boolean
 from fastapi import FastAPI,Response,Request,Form,Depends,BackgroundTasks
 from fastapi.responses import HTMLResponse,RedirectResponse,FileResponse,JSONResponse
 from pydantic import BaseModel,Field
@@ -8,7 +9,7 @@ from datetime import date, datetime
 from rsa_company_gen import encode_rsa,generate_licensefile
 from fastapi.templating import Jinja2Templates
 import sqlalchemy
-from sqlalchemy import and_
+from sqlalchemy import and_,desc
 import databases
 import starlette.status as status
 import json
@@ -71,8 +72,23 @@ async def shutdown():
 @app.get("/page/{now}")
 @app.get("/client/{q}/page/{now}")
 @app.get("/client/{q}")
+@app.get("/{order}")
 @app.get("/")
-async def main(request: Request,q:str=None, now:str=None):
+async def main(request: Request,q:str=None, now:str=None, order:int=None):
+    order_asc= 1
+    order_expired_asc= 3
+    if order is not None :
+        print(order)
+        if order == 0:
+            print("qqq")
+            order_asc = 0
+        elif order == 1:
+            print("aaa")
+            order_asc= 1
+        elif order == 2:
+            order_asc= 2
+        elif order == 3:   
+            order_asc= 3
 
     now_page = 1
     select_client=""
@@ -82,7 +98,31 @@ async def main(request: Request,q:str=None, now:str=None):
     
         query = notes.select().where(client==q)
     else:
-        query = notes.select()
+        #query = notes.select().order_by(notes.c.client.desc())
+        print("else")
+        if order_asc == 1:
+            print("order_asc == 1")
+            order_asc = 0
+            print("order_asc:",order_asc)
+            query = notes.select().order_by(notes.c.client.asc()) 
+        elif order_asc == 0:
+            print("order_asc == 0")
+            order_asc = 1
+            print("order_asc:",order_asc)
+            query = notes.select().order_by(notes.c.client.desc()) #desc
+        elif order_asc == 2:
+            print("order_asc ==2")
+            order_expired_asc = 3
+            order_asc = 0
+            print("order_asc:",order_asc)
+            query = notes.select().order_by(notes.c.expired.asc()) 
+        elif order_asc == 3:
+            print("order_asc == 3")
+            order_expired_asc = 2
+            order_asc = 0
+            print("order_asc:",order_asc)
+            query = notes.select().order_by(notes.c.expired.desc()) #desc
+        #ordered_query = query
     all_item=await database.fetch_all(query)
 
     count,page = cut_page(all_item)
@@ -102,7 +142,7 @@ async def main(request: Request,q:str=None, now:str=None):
         pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
 
         
-    return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_client": select_client})
+    return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_client": select_client,"order_asc": order_asc, "order_expired_asc":order_expired_asc})
 
 @app.get("/uuid/{uuid}/page/{now}")
 @app.get("/uuid/{uuid}")

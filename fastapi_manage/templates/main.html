@@ -4,7 +4,7 @@
       
         <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
-      
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
@@ -234,7 +234,71 @@
         }).then(setTimeout(location.reload.bind(location), 200));
        
     }
-    
+    function sort_by_client(){
+      
+
+      var order = $('#order_asc').val();
+      
+      var old_order = order ;
+      $.ajax({
+          url: "/" + order,
+          type: "GET",
+          success: function (filter_item) { 
+            if (order == 1){
+              
+              order = 0;
+              //$('#sort_client').attr('class','fa fa-sort-desc');
+              $('#order_asc').val(order);
+            }
+            else if(order == 0){
+              
+              order = 1;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_asc').val(order);
+            }
+            else if(order == 2){
+              order = 3;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            else if(order == 3){
+              order = 2;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            
+            window.location.href="/"+ old_order;
+          }
+        });
+      
+    }
+    function sort_by_expired(){
+     
+     
+      
+      var order = $('#order_expired_asc').val();
+      
+      var old_order = order ;
+      $.ajax({
+          url: "/" + order,
+          type: "GET",
+          success: function (filter_item) { 
+           
+            if(order == 2){
+              order = 3;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            else{
+              order = 2;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            
+            window.location.href="/"+ old_order;
+          }
+        });
+    }
   </script>
     
 <div class="ui raised very padded text container segment">
@@ -285,12 +349,14 @@
     <input type="hidden" id="now" value="{{ now }}">
     <input type="hidden" id="pre_page" value="{{ pre_page }}">
     <input type="hidden" id="next_page" value="{{ next_page }}">
-      
+    <input type="hidden" id="order_asc" value="{{ order_asc }}">  
+    <input type="hidden" id="order_expired_asc" value="{{ order_expired_asc }}">  
+ 
       
       <table class="table table-hover" id="manage_table">
-        <tr>
-          <td>Client</td>
-          <td>Expired</td>
+        <tr><!--fa-sort-asc and fa-sort-desc-->
+          <td>Client <i id="sort_client" class="fa fa-fw fa-sort" onclick="sort_by_client()"></i></td>
+          <td>Expired <i id="sort_expired" class="fa fa-fw fa-sort" onclick="sort_by_expired()"></i></td>
           <td>UUID</td>
           <td>最近修改時間</td>
           <td>建立時間</td>

@@ -400,8 +400,8 @@ async def download(code_id:int):
     query=notes.select().where(notes.c.id==code_id)
 
     uni_item=await database.fetch_one(query)
-    generate_licensefile(uni_item.code)
-    return FileResponse("licensefile.skm")
+    generate_licensefile(uni_item.code,"iam3d.lic")
+    return FileResponse("iam3d.lic")
 
 
 
@@ -409,16 +409,16 @@ def cut_page(all_item):
     count = len(all_item)
 
     
-    if count%5 == 0:
-      page = count//5
+    if count%10 == 0:
+      page = count//10
     else:
-      page = count//5 +1
+      page = count//10 +1
     return count,page
 def pagination(now,pre_page,next_page,page,all_item):
     now_page=int(now)
    
-    start_item = (now_page - 1)*5
-    end_item = start_item + 5
+    start_item = (now_page - 1)*10
+    end_item = start_item + 10
     all_item = all_item[start_item:end_item]
 
     if now_page > 1 and now_page < page:

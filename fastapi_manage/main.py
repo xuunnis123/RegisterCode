@@ -71,6 +71,7 @@ async def shutdown():
 
 @app.get("/page/{now}")
 @app.get("/client/{q}/page/{now}")
+@app.get("/client/{q}/page/{now}/{order}")
 @app.get("/client/{q}")
 @app.get("/{order}")
 @app.get("/")
@@ -133,6 +134,152 @@ async def main(request: Request,q:str=None, now:str=None, order:int=None):
 
         
     return templates.TemplateResponse("main.html", {"request": request,"all_item" : all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page, "select_client": select_client,"order_asc": order_asc, "order_expired_asc":order_expired_asc})
+
+
+@app.get("/date/{pass_date}/page/{now}")
+@app.get("/date/{pass_date}/page/{now}/{order}")
+@app.get("/date/{date_bind}/{order}")
+@app.get("/date/{date_bind}")
+async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=None,order:int=None):
+    order_asc= 1
+    order_expired_asc= 3
+    if order is not None :
+        print(order)
+        if order == 0:
+            print("dateqqq")
+            order_asc = 0
+        elif order == 1:
+            print("dateaaa")
+            order_asc= 1
+        elif order == 2:
+            order_asc= 2
+        elif order == 3:   
+            order_asc= 3
+    is_duration = 0
+    start_time = ""
+    end_time = ""
+    now_page = 1
+    start = None
+    end= None
+    if pass_date is not None:
+        date_bind = pass_date
+
+    
+    if date_bind.find("_") == 0:
+        start = None
+        end = date_bind[1:]
+        end_time = end
+    if date_bind.find("_") == 8:
+        start = date_bind.split("_")[0]
+        start_time=start
+        if len(date_bind) > 9:
+            end = date_bind.split("_")[1]
+            end_time = end
+        else :
+            end = None
+
+    
+
+    if start is not None and end is None:
+
+        is_duration = 1
+
+        expired= sqlalchemy.sql.column('expired')
+        if order_asc ==1:
+            order_asc = 0
+            query = notes.select().where(expired >= start).order_by(notes.c.client.asc())
+        
+        elif order_asc == 0:
+            print("order_asc==0")
+            order_asc = 1
+            query = notes.select().where(expired >= start).order_by(notes.c.client.desc())
+
+        elif order_asc == 2:
+            order_expired_asc = 3
+            order_asc = 0
+            query = notes.select().where(expired >= start).order_by(notes.c.expired.asc())
+        
+        elif order_asc == 3:
+            order_expired_asc = 2
+            order_asc = 0
+            query = notes.select().where(expired >= start).order_by(notes.c.expired.desc())
+
+    elif start is None and end is not None:
+        
+        is_duration = 1
+
+        expired= sqlalchemy.sql.column('expired')
+
+        #query = notes.select().where(expired <= end)
+
+        if order_asc ==1:
+            order_asc = 0
+            query = notes.select().where(expired <= end).order_by(notes.c.client.asc())
+        
+        elif order_asc == 0:
+            order_asc = 1
+            query = notes.select().where(expired <= end).order_by(notes.c.client.desc())
+
+        elif order_asc == 2:
+            order_expired_asc = 3
+            order_asc = 0
+            query = notes.select().where(expired <= end).order_by(notes.c.expired.asc())
+        
+        elif order_asc == 3:
+            order_expired_asc = 2
+            order_asc = 0
+            query = notes.select().where(expired <= end).order_by(notes.c.expired.desc())
+
+    elif start is not None and end is not None:
+        
+        is_duration = 1
+
+        expired= sqlalchemy.sql.column('expired')
+
+        query = notes.select().where(and_(expired >= start , expired <= end))
+
+        if order_asc ==1:
+            order_asc = 0
+            query = notes.select().where(and_(expired >= start , expired <= end)).order_by(notes.c.client.asc())
+        
+        elif order_asc == 0:
+            order_asc = 1
+            query = notes.select().where(and_(expired >= start , expired <= end)).order_by(notes.c.client.desc())
+
+        elif order_asc == 2:
+            order_expired_asc = 3
+            order_asc = 0
+            query = notes.select().where(and_(expired >= start , expired <= end)).order_by(notes.c.expired.asc())
+        
+        elif order_asc == 3:
+            order_expired_asc = 2
+            order_asc = 0
+            query = notes.select().where(and_(expired >= start , expired <= end)).order_by(notes.c.expired.desc())
+
+
+    else:
+        
+        query = notes.select().order_by(notes.c.expired.asc())
+    all_item = await database.fetch_all(query)
+
+    count,page = cut_page(all_item)
+    
+
+    pre_page = 0
+    next_page = 0
+    
+    if now is not None:
+  
+        pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
+    else:
+  
+        now = 1
+        pre_page = 1
+        next_page = 2
+        pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
+    
+    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page,"start_time":start_time,"end_time":end_time , "is_duration" : is_duration,"order_asc": order_asc, "order_expired_asc":order_expired_asc,"date_duration":date_bind})
+
 
 @app.get("/uuid/{uuid}/page/{now}")
 @app.get("/uuid/{uuid}")
@@ -256,68 +403,7 @@ async def download(code_id:int):
     generate_licensefile(uni_item.code)
     return FileResponse("licensefile.skm")
 
-@app.get("/date/{pass_date}/page/{now}")
-@app.get("/date/{date_bind}")
-async def main(request: Request,date_bind:str=None,now:str=None,pass_date:str=None):
 
-    start_time=""
-    end_time=""
-    now_page = 1
-    if pass_date is not None:
-        date_bind = pass_date
-
-    
-    if date_bind.find("_") == 0:
-        start = None
-        end = date_bind[1:]
-        end_time = end
-    if date_bind.find("_") == 8:
-        start = date_bind.split("_")[0]
-        start_time=start
-        if len(date_bind) > 9:
-            end = date_bind.split("_")[1]
-            end_time = end
-        else :
-            end = None
-
-    if start is not None and end is None:
-        
-        expired= sqlalchemy.sql.column('expired')
-     
-        query = notes.select().where(expired >= start)
-        
-    elif start is None and end is not None:
-        
-        expired= sqlalchemy.sql.column('expired')
-
-        query = notes.select().where(expired <= end)
-    elif start is not None and end is not None:
-        
-        expired= sqlalchemy.sql.column('expired')
-
-        query = notes.select().where(and_(expired >= start , expired <= end))
-    else:
-        
-        query = notes.select()
-    all_item = await database.fetch_all(query)
-
-    count,page = cut_page(all_item)
-    
-
-    pre_page = 0
-    next_page = 0
-    
-    if now is not None:
-  
-        pre_page,now,next_page,all_item = pagination(now,pre_page,next_page,page,all_item)
-    else:
-  
-        now = 1
-        pre_page = 1
-        next_page = 2
-        pre_page,now,next_page,all_item = pagination(now_page,pre_page,next_page,page,all_item)
-    
-    return templates.TemplateResponse("main.html", {"request": request,"all_item":all_item, "count" : count, "page" : page ,"now" : now ,"pre_page": pre_page, "next_page": next_page,"start_time":start_time,"end_time":end_time})
 
 def cut_page(all_item):
     count = len(all_item)

@@ -11,13 +11,12 @@ def gen_private_public():
     # 產生 2048 位元 RSA 金鑰
     key = RSA.generate(2048, random_generator)
     # 保護金鑰的密碼
-    secret_code = "secret#code"
+    secret_code = "9dcr69wPk7Tu2pzTYAUWk4Rw9PBCqUn2"
 
-    encrypted_key = key.export_key(
-                                    passphrase = secret_code,
-                                    pkcs = 8,
-                                    protection = "scryptAndAES128-CBC"
-                                )
+    encrypted_key = key.export_key(passphrase=secret_code,
+                                   pkcs=8,
+                                   protection="scryptAndAES128-CBC",
+                                   )
     public_key = key.publickey().exportKey()
     # 將 RSA 金鑰寫入檔案
     with open("private.pem", "wb") as file_content:

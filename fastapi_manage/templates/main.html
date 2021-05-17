@@ -92,7 +92,7 @@
 
       
       $(".btn-secondary").click(function () {
-        num=this.id;
+        num = this.id;
         alert("Start to Download !")
         $.ajax({
           url: "/downloadfile/" + num,
@@ -127,6 +127,9 @@
     
        
       $("#date_search_button").click(function () {
+        var order = $('#order_asc').val();
+        var old_order = order ;
+      
         start = $("#start_datepicker").val();
         end = $("#end_datepicker").val();
         
@@ -140,7 +143,7 @@
         if(start != null || end != null ){
           date_bind=start+"_"+end;
         }
-        
+        $('date_duration').val(date_bind);
         $.ajax({
           url: ((date_bind.length <= 1 )?"/":"/date/" + date_bind),
           type: "GET",
@@ -235,11 +238,19 @@
        
     }
     function sort_by_client(){
-      
-
       var order = $('#order_asc').val();
-      
       var old_order = order ;
+      var date_bind = $('#date_duration').val();
+      if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= ""){
+        $.ajax({
+          url: "/date/"+date_bind+"/"+order,
+          type: "GET",
+          success: function (filter_item) { 
+            window.location.href="/date/"+date_bind+"/"+order
+          }
+        });
+      }
+      else{
       $.ajax({
           url: "/" + order,
           type: "GET",
@@ -270,7 +281,7 @@
             window.location.href="/"+ old_order;
           }
         });
-      
+      }
     }
     function sort_by_expired(){
      
@@ -279,6 +290,17 @@
       var order = $('#order_expired_asc').val();
       
       var old_order = order ;
+      var date_bind = $('#date_duration').val();
+      if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= ""){
+        $.ajax({
+          url: "/date/"+date_bind+"/"+order,
+          type: "GET",
+          success: function (filter_item) { 
+            window.location.href="/date/"+date_bind+"/"+order
+          }
+        });
+      }
+      else{
       $.ajax({
           url: "/" + order,
           type: "GET",
@@ -298,6 +320,7 @@
             window.location.href="/"+ old_order;
           }
         });
+      }
     }
   </script>
     
@@ -351,9 +374,11 @@
     <input type="hidden" id="next_page" value="{{ next_page }}">
     <input type="hidden" id="order_asc" value="{{ order_asc }}">  
     <input type="hidden" id="order_expired_asc" value="{{ order_expired_asc }}">  
- 
-      
+    <input type="hidden" id="is_duration" value="{{ is_duration }}">
+    <input type="hidden" id="date_duration" value="{{ date_duration }}">
+    
       <table class="table table-hover" id="manage_table">
+       
         <tr><!--fa-sort-asc and fa-sort-desc-->
           <td>Client <i id="sort_client" class="fa fa-fw fa-sort" onclick="sort_by_client()"></i></td>
           <td>Expired <i id="sort_expired" class="fa fa-fw fa-sort" onclick="sort_by_expired()"></i></td>

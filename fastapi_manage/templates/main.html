@@ -374,7 +374,6 @@
     <input type="hidden" id="next_page" value="{{ next_page }}">
     <input type="hidden" id="order_asc" value="{{ order_asc }}">  
     <input type="hidden" id="order_expired_asc" value="{{ order_expired_asc }}">  
-    <input type="hidden" id="is_duration" value="{{ is_duration }}">
     <input type="hidden" id="date_duration" value="{{ date_duration }}">
     
       <table class="table table-hover" id="manage_table">
@@ -423,7 +422,7 @@
   <ul class="pagination">
     <li class="page-item"><a class="page-link" href="/page/{{ pre_page }}" id="pre" >前一頁</a></li>
     
-    <li class="page-item"><a class="page-link" href="#"> 第 {{ now }} / {{ page }} 頁，( 共 {{ count }} 筆 )</a></li>
+    <li class="page-item"><a class="page-link" href="#"> 第 {{ now }} / {{ page }} 頁， 共 {{ count }} 筆 </a></li>
 
    
     <li class="page-item"><a class="page-link" href="/page/{{ next_page }}" id="next" >下一頁</a></li>

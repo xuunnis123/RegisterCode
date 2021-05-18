@@ -384,8 +384,8 @@
           <td>UUID</td>
           <td>最近修改時間</td>
           <td>建立時間</td>
+          <td>更新</td>
           <td>操作</td>
-          
         </tr>
         {% for item in all_item%}
         <tr class="table-light">
@@ -394,23 +394,25 @@
           <td class="table-light"><input type="text" id="edit_uuid_{{item['id']}}" class="form-control" value="{{item['uuid']}}" disabled=true/></td><!--input-group-text-->
           <td class="table-light">{{item['edited_time']}}</td>
           <td class="table-light">{{item['created_time']}}</td>
-          <td><button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
-        編輯
-          </button>
-          <div id="save_{{item['id']}}" style="display:none">
-          <button type="button" class="btn btn-primary" id="edit_save_button" onclick="update_code(value)" value="{{item['id']}}"> 
-            儲存
-          </button>
+          <td class="col-1">
+            <button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
+              編輯
+            </button>
+          <div id="save_{{item['id']}}" style="display:none" class="col-md-auto">
+            <button type="button" class="btn btn-primary" id="edit_save_button" onclick="update_code(value)" value="{{item['id']}}"> 
+              儲存
+            </button>
           </div>
-          <button class="btn btn-danger" id="{{item['id']}}">
-            
-            刪除
-          </button>
+        </td>
+          <td class="col-3">
+            <button class="btn btn-danger" id="{{item['id']}}">
+              刪除
+            </button>
           
           <a href="/download/{{item['id']}}" class="btn btn-secondary" id="{{item['id']}}" download="iam3d.lic">
-            
             下載
           </a>
+        
           </td>
         </tr>
         

@@ -1,0 +1,437 @@
+<html>
+    <head>
+        <title>授權碼管理頁面</title>
+      
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+
+
+    </head>
+<body>
+    <script>
+    $(document).ready(function () {
+      var num;
+      var input;
+      var filter_item=[];
+
+     
+      $("#start_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#end_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#expired_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $("#input_expired_datepicker").datepicker({ dateFormat: 'yymmdd' });
+      $('input[id^="edit_expired"]').datepicker({ dateFormat: 'yymmdd' });
+      $("#save_button").click(function () {
+        client = $("#input_client").val();
+        expired = $("#input_expired_datepicker").val();
+        uuid=$("#input_uuid").val();
+        
+        $.ajax({
+          url: "/register",
+          type: "POST",
+          data: JSON.stringify({ "client": client,"expired":expired, "uuid":uuid }),
+          
+          success: function () { 
+          alert("Success ADD!");  //請求成功後執行的操作
+            
+        }  
+        }).then(setTimeout(location.reload.bind(location), 200));
+        
+          
+      }
+        
+      );
+      
+      if($('#page').val() == $('#now').val()){
+        $('#next').attr('disabled',true);
+      }
+      
+      if($('#search_bar').val() != ""  || $('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+        
+        var now = $('#now').val();
+       
+        if($('#search_bar').val()!=""){
+          
+          
+          $('#search_bar').val($('#search_bar').val());
+   
+          var save= $('#search_bar').val();
+          var url= '/client/'+save+'/page/'+now;
+          var pre_page = $('#pre_page').val();
+          var next_page = $('#next_page').val();
+          $('#next').attr('href','/client/'+save+'/page/'+next_page);
+          $('#pre').attr('href','/client/'+save+'/page/'+pre_page);
+        }
+        
+        else if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= "" ){
+          var start = $('#start_datepicker').val();
+          var end = $('#end_datepicker').val();
+          var pass_result="";
+         
+          pass_result = start + "_" + end;
+         
+          
+          var url= '/date/'+pass_result+'/page/'+now;
+          var pre_page = $('#pre_page').val();
+          var next_page = $('#next_page').val();
+         
+          $('#next').attr('href','/date/'+pass_result+'/page/'+next_page);
+          $('#pre').attr('href','/date/'+pass_result+'/page/'+pre_page);
+       
+        }
+        
+          
+        
+      }
+
+      
+      $(".btn-secondary").click(function () {
+        num = this.id;
+        alert("Start to Download !")
+        $.ajax({
+          url: "/downloadfile/" + num,
+          type: "get",
+          data: JSON.stringify({ "code_id": num}),
+          
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
+      $(".btn-danger").click(function () {
+        num = this.id;
+        input = document.getElementById("saved_text_" + num).innerHTML;
+      
+        $.ajax({
+          url: "/register/" + num,
+          type: "DELETE",
+        }).then(setTimeout(location.reload.bind(location), 200));
+      });
+      $("#client_search_button").click(function () {
+        
+        q=$("#search_bar").val();
+      
+    
+        
+        $.ajax({
+          url: ((q==null)?"/":"/client/" + q),
+          type: "GET",
+          success: function (filter_item) { 
+          window.location.href=((q==null)?"/":"/client/" + q);
+        }
+        });
+      });
+    
+       
+      $("#date_search_button").click(function () {
+        var order = $('#order_asc').val();
+        var old_order = order ;
+      
+        start = $("#start_datepicker").val();
+        end = $("#end_datepicker").val();
+        
+        
+        var start_buffer = "";
+        var start_handle = "";
+        var end_buffer = "";
+        var end_handle = "";
+        
+        var date_bind="";
+        if(start != null || end != null ){
+          date_bind=start+"_"+end;
+        }
+        $('date_duration').val(date_bind);
+        $.ajax({
+          url: ((date_bind.length <= 1 )?"/":"/date/" + date_bind),
+          type: "GET",
+          success: function () { 
+          window.location.href=((date_bind.length <= 1 )?"/":"/date/" + date_bind);
+          
+        }
+        });
+      });
+      
+      $('button[id^="cancel_button"]').click(function () {
+        
+        $("#uuid_search").val("");
+        $("#search_bar").val("");
+        $("#start_datepicker").val("");
+        $("#end_datepicker").val("");
+       
+        $.ajax({
+          url: "/",
+          type: "GET",
+          success: function (filter_item) { 
+          window.location.href="/";
+        }
+        });
+      });
+       
+    });
+    function show_hide(){
+      var x = document.getElementById("add_section");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+    function change_disabled(id){
+      
+      
+
+    
+    　if(document.getElementById('edit_client_'+id).disabled===false){
+
+      　document.getElementById('edit_client_'+id).disabled=true;
+        document.getElementByName('save_'+id).style.display = 'none';
+        document.getElementById("edit_btn_"+id).style.display='block';
+
+    　}else{
+       
+      　document.getElementById('edit_client_'+id).disabled=false;
+      document.getElementById('edit_expired_'+id).disabled=false;
+      document.getElementById('edit_uuid_'+id).disabled=false;
+      document.getElementById('save_'+id).style.display = 'block';
+      document.getElementById("edit_btn_"+id).style.display='none';
+    　}
+    }
+    function update_code(id){
+     
+      var buffer = document.getElementById('edit_expired_'+id).value;
+      
+      document.getElementById('save_'+id).style.display = 'none';
+      document.getElementById("edit_btn_"+id).style.display='block';
+      document.getElementById('edit_client_'+id).disabled=true;
+      document.getElementById('edit_expired_'+id).disabled=true;
+      document.getElementById('edit_uuid_'+id).disabled=true;
+      expired_before = $("#edit_expired_"+id).val();
+      
+      if(expired_before.match("/")!=null){
+      
+      expired_buffer = expired_before.split("/");
+      
+      expired_handle = expired_buffer[2] + expired_buffer[0] + expired_buffer[1];
+      $("#edit_expired_"+id).val(expired_handle);
+      }
+      else{
+        $("#edit_expired_"+id).val(expired_before);
+      }
+      
+      client = $("#edit_client_"+id).val();
+        expired = $("#edit_expired_"+id).val();
+        uuid=$("#edit_uuid_"+id).val();
+       
+        $.ajax({
+          url: "/register/" + id,
+          type: "PUT",
+          data: JSON.stringify({ "client": client,"expired":expired, "uuid":uuid }),
+          
+          success: function () { 
+          alert("Success Edit!")  //請求成功後執行的操作
+           window.location.reload()  //重新整理頁面
+        }
+        }).then(setTimeout(location.reload.bind(location), 200));
+       
+    }
+    function sort_by_client(){
+      var order = $('#order_asc').val();
+      var old_order = order ;
+      var date_bind = $('#date_duration').val();
+      if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= ""){
+        $.ajax({
+          url: "/date/"+date_bind+"/"+order,
+          type: "GET",
+          success: function (filter_item) { 
+            window.location.href="/date/"+date_bind+"/"+order
+          }
+        });
+      }
+      else{
+      $.ajax({
+          url: "/" + order,
+          type: "GET",
+          success: function (filter_item) { 
+            if (order == 1){
+              
+              order = 0;
+              //$('#sort_client').attr('class','fa fa-sort-desc');
+              $('#order_asc').val(order);
+            }
+            else if(order == 0){
+              
+              order = 1;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_asc').val(order);
+            }
+            else if(order == 2){
+              order = 3;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            else if(order == 3){
+              order = 2;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            
+            window.location.href="/"+ old_order;
+          }
+        });
+      }
+    }
+    function sort_by_expired(){
+     
+     
+      
+      var order = $('#order_expired_asc').val();
+      
+      var old_order = order ;
+      var date_bind = $('#date_duration').val();
+      if($('#start_datepicker').val()!= "" || $('#end_datepicker').val()!= ""){
+        $.ajax({
+          url: "/date/"+date_bind+"/"+order,
+          type: "GET",
+          success: function (filter_item) { 
+            window.location.href="/date/"+date_bind+"/"+order
+          }
+        });
+      }
+      else{
+      $.ajax({
+          url: "/" + order,
+          type: "GET",
+          success: function (filter_item) { 
+           
+            if(order == 2){
+              order = 3;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            else{
+              order = 2;
+              //$('#sort_client').attr('class','fa fa-sort-asc');
+              $('#order_expired_asc').val(order);
+            }
+            
+            window.location.href="/"+ old_order;
+          }
+        });
+      }
+    }
+  </script>
+    
+<div class="ui raised very padded text container segment">
+    <h1 class="display-4" style="text-align: center;">授權碼管理頁面</h1>
+    
+    
+    <br/>
+
+    <div class="container">
+      <button type="button" class="btn btn-primary" id="add_button" onclick="show_hide()">
+        新增
+      </button>
+      
+      <div id="add_section" style="display:none" class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Client <input type="text" placeholder="New Client....." id="input_client" class="form-control"/></span>
+         
+        <span class="input-group-text" id="inputGroup-sizing-default">Expired <input type="text" placeholder="New Expired....." id="input_expired_datepicker" class="form-control"/></span>
+             
+        <span class="input-group-text" id="inputGroup-sizing-default">UUID<input type="text" placeholder="New UUID....." id="input_uuid" class="form-control"/></span>
+         
+        
+        <button type="button"  id="save_button" class="btn btn-outline-success">儲存</button>
+        <button class="btn btn-warning" id="cancel_button">取消</button>
+      </div>
+   
+      <div class="input-group mb-3">
+        <input type="text" id="search_bar" name="q" class="form-control" placeholder="Search Client..." value={{select_client}}>
+        <button class="btn btn-primary" id="client_search_button">搜尋</button>
+
+      </div>
+      <div class="input-group mb-3">
+        
+        <input type="text" id="start_datepicker" class="form-control" placeholder="Start Expired Date..." value={{start_time}}>
+        
+        <input type="text" id="end_datepicker" class="form-control" placeholder="End Expired Date..." value={{end_time}}>
+        <button id="date_search_button" class="btn btn-primary">搜尋</button>
+        
+      </div>
+      <div>
+      <button class="btn btn-warning" id="cancel_button">搜尋取消</button>
+    </div>
+      
+  </div>
+  <h3 class="display-6" style="text-align: center;">授權碼管理清單</h3>
+  <!---->
+    <input type="hidden" id="count" value="{{ count }}">
+    <input type="hidden" id="page" value="{{ page }}">
+    <input type="hidden" id="now" value="{{ now }}">
+    <input type="hidden" id="pre_page" value="{{ pre_page }}">
+    <input type="hidden" id="next_page" value="{{ next_page }}">
+    <input type="hidden" id="order_asc" value="{{ order_asc }}">  
+    <input type="hidden" id="order_expired_asc" value="{{ order_expired_asc }}">  
+    <input type="hidden" id="date_duration" value="{{ date_duration }}">
+    
+      <table class="table table-hover" id="manage_table">
+       
+        <tr><!--fa-sort-asc and fa-sort-desc-->
+          <td>Client <i id="sort_client" class="fa fa-fw fa-sort" onclick="sort_by_client()"></i></td>
+          <td>Expired <i id="sort_expired" class="fa fa-fw fa-sort" onclick="sort_by_expired()"></i></td>
+          <td>UUID</td>
+          <td>最近修改時間</td>
+          <td>建立時間</td>
+          <td>更新</td>
+          <td>操作</td>
+        </tr>
+        {% for item in all_item%}
+        <tr class="table-light">
+          <td class="table-light" id="saved_text_{{item['id']}}"><input type="text" id="edit_client_{{item['id']}}" class="form-control" value="{{item['client']}}" disabled=true/></td>
+          <td class="table-light"><input type="text" id="edit_expired_{{item['id']}}" class="form-control" value="{{item['expired']}}" disabled=true/></td>
+          <td class="table-light"><input type="text" id="edit_uuid_{{item['id']}}" class="form-control" value="{{item['uuid']}}" disabled=true/></td><!--input-group-text-->
+          <td class="table-light">{{item['edited_time']}}</td>
+          <td class="table-light">{{item['created_time']}}</td>
+          <td class="col-1">
+            <button type="button" class="btn btn-primary" id="edit_btn_{{item['id']}}" value="{{item['id']}}" onclick="change_disabled(value)" style="display: block;"> 
+              編輯
+            </button>
+          <div id="save_{{item['id']}}" style="display:none" class="col-md-auto">
+            <button type="button" class="btn btn-primary" id="edit_save_button" onclick="update_code(value)" value="{{item['id']}}"> 
+              儲存
+            </button>
+          </div>
+        </td>
+          <td class="col-3">
+            <button class="btn btn-danger" id="{{item['id']}}">
+              刪除
+            </button>
+          
+          <a href="/download/{{item['id']}}" class="btn btn-secondary" id="{{item['id']}}" download="iam3d.lic">
+            下載
+          </a>
+        
+          </td>
+        </tr>
+        
+        {% endfor %}
+      </table>
+      
+
+     <nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="/page/{{ pre_page }}" id="pre" >前一頁</a></li>
+    
+    <li class="page-item"><a class="page-link" href="#"> 第 {{ now }} / {{ page }} 頁， 共 {{ count }} 筆 </a></li>
+
+   
+    <li class="page-item"><a class="page-link" href="/page/{{ next_page }}" id="next" >下一頁</a></li>
+  </ul>
+</nav>
+  
+
+  </body>
+
+</html>

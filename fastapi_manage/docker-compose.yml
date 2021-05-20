@@ -1,0 +1,10 @@
+version: '3'
+services:
+    activation_tool:
+        build: .
+        ports:
+            - "8000:8000"
+        restart: always
+        
+        container_name: activation_tool
+        

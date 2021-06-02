@@ -27,3 +27,5 @@ fastapi_manage/test.db
 fastapi_manage/iam3d.lic
 requirements.txt
 fastapi_manage/iam3d.lic
+*/__pycache__
+kms.puml

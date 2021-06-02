@@ -10,7 +10,7 @@ import sqlalchemy
 from sqlalchemy import and_
 import databases
 
-DATABASE_URL = "sqlite:///./test.db"
+DATABASE_URL = "sqlite:///./data/test.db"
 
 metadata = sqlalchemy.MetaData()
 
